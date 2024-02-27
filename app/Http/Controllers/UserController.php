@@ -26,6 +26,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
             'password' => 'required|string|min:6|max:24|',
+            'role' => 'required|string',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -34,7 +35,7 @@ class UserController extends Controller
                 "status" => 400
             ]);
         }
-        $data = $request->only('name', 'email', 'phone', 'password');
+        $data = $request->only('name', 'email', 'phone', 'password','role');
 
 
         $user = new User();
@@ -45,6 +46,7 @@ class UserController extends Controller
         $user->phone = $request->phone;
         $user->password = Hash::make($request->password);
         $user->save();
+        $user->assignRole($request->roles);
 
         return response()->json([
             'message' => "successfully registered",
@@ -67,8 +69,6 @@ class UserController extends Controller
         if (is_null($user)) {
             return response()->json(['message' => 'utilisateur introuvable'], 404);
         }
-
-       
 
         // Supprimer l'utilisateur
         $user->delete();

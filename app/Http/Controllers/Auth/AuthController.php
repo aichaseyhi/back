@@ -20,17 +20,17 @@ class AuthController extends Controller
             'phone'=>'required', 'regex:/^[0-9]{8}$/',
             'email'=>'required|email|unique:users,email',
             'password'=>'required|min:6|max:24|',
-           // 'role_id'=>'required',
+            'role'=>'required',
         ]);
 
         $user = new User();
         $user->name = $request->name;
         $user->phone = $request->phone;
         $user->email = $request->email;
-      //  $user->role_id = $request->role_id;
         $user->password = Hash::make($request->password);
 
         $user->save();
+        $user->assignRole($request->roles);
         return response()->json('User Created');
     }
    
