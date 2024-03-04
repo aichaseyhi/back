@@ -46,7 +46,7 @@ class UserController extends Controller
         $user->phone = $request->phone;
         $user->password = Hash::make($request->password);
         $user->save();
-        $user->assignRole($request->roles);
+        $user->assignRole($request->role);
 
         return response()->json([
             'message' => "successfully registered",

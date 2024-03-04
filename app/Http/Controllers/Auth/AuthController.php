@@ -30,7 +30,7 @@ class AuthController extends Controller
         $user->password = Hash::make($request->password);
 
         $user->save();
-        $user->assignRole($request->roles);
+        $user->assignRole($request->role);
         return response()->json('User Created');
     }
    

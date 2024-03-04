@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\ChangePasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PasswordResetRequestController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -29,6 +31,9 @@ Route::controller(AuthController::class)->group(function () {
    
 
 });
+
+Route::post('/reset-password-request', [PasswordResetRequestController::class, 'sendPasswordResetEmail']);
+Route::post('/change-password', [ChangePasswordController::class, 'passwordResetProcess']);
 
 
 Route::get('/users',[UserController::class, 'index']);
