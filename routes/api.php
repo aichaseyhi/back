@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetRequestController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BoutiqueController;
+use App\Http\Controllers\ProduitController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +36,8 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
+
+//user
 Route::post('/reset-password-request', [PasswordResetRequestController::class, 'sendPasswordResetEmail']);
 Route::post('/change-password', [ChangePasswordController::class, 'passwordResetProcess']);
 
@@ -42,3 +48,23 @@ Route::post('/save',[UserController::class, 'store']);
 Route::get('/show/{id}',[UserController::class, 'show']);
 Route::delete('/destroy/{id}',[UserController::class, 'destroy']);
 
+
+
+//boutique
+Route::get('/boutiques',[BoutiqueController::class, 'index']);
+
+Route::post('/saveBoutique',[BoutiqueController::class, 'store']);
+
+Route::put('/updateBoutique/{id}',[BoutiqueController::class, 'update']);
+
+Route::delete('/deleteBoutique/{id}',[BoutiqueController::class, 'destroy']);
+
+
+//produit
+Route::get('/produits',[ProduitController::class, 'index']);
+
+Route::post('/saveProduit',[ProduitController::class, 'store']);
+
+Route::put('/updateProduit/{id}',[ProduitController::class, 'update']);
+
+Route::delete('/deleteProduit/{id}',[ProduitController::class, 'destroy']);
