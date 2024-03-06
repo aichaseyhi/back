@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetRequestController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\BoutiqueController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProduitController;
 
 
@@ -50,14 +50,14 @@ Route::delete('/destroy/{id}',[UserController::class, 'destroy']);
 
 
 
-//boutique
-Route::get('/boutiques',[BoutiqueController::class, 'index']);
+//store
+Route::get('/stores',[StoreController::class, 'index']);
 
-Route::post('/saveBoutique',[BoutiqueController::class, 'store']);
+Route::post('/saveStore',[StoreController::class, 'store']);
 
-Route::put('/updateBoutique/{id}',[BoutiqueController::class, 'update']);
+Route::put('/updateStore/{id}',[StoreController::class, 'update']);
 
-Route::delete('/deleteBoutique/{id}',[BoutiqueController::class, 'destroy']);
+Route::delete('/deleteStore/{id}',[StoreController::class, 'destroy']);
 
 
 //produit

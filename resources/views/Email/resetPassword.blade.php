@@ -1,12 +1,12 @@
-<x-mail::message>
-# Introduction
+@component('mail::message')
+# Reset Password
 
-The body of your message.
+Reset or change your password.
 
-<x-mail::button :url="''">
-Button Text
-</x-mail::button>
+@component('mail::button', ['url' => 'http://localhost:4200/change-password?token='.$token])
+Change Password
+@endcomponent
 
 Thanks,<br>
 {{ config('app.name') }}
-</x-mail::message>
+@endcomponent

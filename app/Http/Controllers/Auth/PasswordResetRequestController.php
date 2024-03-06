@@ -49,7 +49,7 @@ class PasswordResetRequestController extends Controller
         DB::table('recover_password')->insert([
             'email' => $email,
             'token' => $token,
-            'created' => Carbon::now()            
+            'created_at' => Carbon::now()            
         ]);
     }
 }
