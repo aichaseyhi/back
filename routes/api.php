@@ -40,7 +40,7 @@ Route::controller(AuthController::class)->group(function () {
 //user
 Route::post('/reset-password-request', [PasswordResetRequestController::class, 'sendPasswordResetEmail']);
 Route::post('/change-password', [ChangePasswordController::class, 'passwordResetProcess']);
-
+Route::get('/user/{Role}',[UserController::class, 'getUsersByRole']);
 
 Route::get('/users',[UserController::class, 'index']);
 

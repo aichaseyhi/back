@@ -11,6 +11,6 @@ class Store extends Model
 
     protected $table = 'boutiques';
     protected $primaryKey = 'id';
-    protected $fillable = ['name'];   
+    protected $fillable = ['name', 'provider_id'];   
 
 }

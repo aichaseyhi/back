@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Role;
 
 class UserController extends Controller
 {
@@ -35,7 +37,7 @@ class UserController extends Controller
                 "status" => 400
             ]);
         }
-        $data = $request->only('name', 'email', 'phone', 'password','role');
+        // $data = $request->only('name', 'email', 'phone', 'password','role');
 
 
         $user = new User();
@@ -47,6 +49,13 @@ class UserController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
         $user->assignRole($request->role);
+
+        if ($request->role == 'provider-intern'){
+            $store = new Store();
+            $store->name = $request->nameboutique;
+            $store->provider_id = $user->id;
+            $store->save();
+        }
 
         return response()->json([
             'message' => "successfully registered",
@@ -74,6 +83,13 @@ class UserController extends Controller
         $user->delete();
 
         return response(null, 204);
+    }
+
+ 
+    public function getUsersByRole($Role)
+    {
+        $userRole = User::role($Role)->get();
+        return response()->json( $userRole);
     }
 
 }

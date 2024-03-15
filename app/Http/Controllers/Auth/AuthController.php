@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
@@ -20,6 +21,9 @@ class AuthController extends Controller
             'phone'=>'required', 'regex:/^[0-9]{8}$/',
             'email'=>'required|email|unique:users,email',
             'password'=>'required|min:6|max:24|',
+            'birthday' => 'required|date|date_format:Y-m-d',
+            'sexe' => ['required', 'in:male,female'],
+            'status' => 'required',
             'role'=>'required',
         ]);
 
@@ -31,6 +35,14 @@ class AuthController extends Controller
 
         $user->save();
         $user->assignRole($request->role);
+
+        if ($request->role == 'provider-intern'){
+            $store = new Store();
+            $store->name = $request->nameboutique;
+            $store->provider_id = $user->id;
+            $store->save();
+        }
+        
         return response()->json('User Created');
     }
    
