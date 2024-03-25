@@ -21,7 +21,7 @@ class AuthController extends Controller
             'phone'=>'required', 'regex:/^[0-9]{8}$/',
             'email'=>'required|email|unique:users,email',
             'password'=>'required|min:6|max:24|',
-            'birthday' => 'required|date|date_format:Y-m-d',
+            'birthday' => 'required', 'date',
             'sexe' => ['required', 'in:male,female'],
             'status' => 'required',
             'role'=>'required',
@@ -32,6 +32,9 @@ class AuthController extends Controller
         $user->phone = $request->phone;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
+        $user->birthday = $request->birthday;
+        $user->sexe = $request->sexe;
+        $user->status = $request->status;
 
         $user->save();
         $user->assignRole($request->role);

@@ -29,6 +29,9 @@ class UserController extends Controller
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
             'password' => 'required|string|min:6|max:24|',
             'role' => 'required|string',
+            'birthday' => 'required', 'date',
+            'sexe' => ['required', 'in:male,female'],
+            'status' => 'required',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -47,6 +50,9 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->password = Hash::make($request->password);
+        $user->birthday = $request->birthday;
+        $user->sexe = $request->sexe;
+        $user->status = $request->status;
         $user->save();
         $user->assignRole($request->role);
 
