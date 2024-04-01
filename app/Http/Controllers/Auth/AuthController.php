@@ -21,7 +21,7 @@ class AuthController extends Controller
             'phone'=>'required', 'regex:/^[0-9]{8}$/',
             'email'=>'required|email|unique:users,email',
             'password'=>'required|min:6|max:24|',
-            'birthday' => 'required', 'date',
+            'birthday' => 'required', 'date_format:Y-m-d',
             'sexe' => ['required', 'in:male,female'],
             'status' => 'required',
             'role'=>'required',

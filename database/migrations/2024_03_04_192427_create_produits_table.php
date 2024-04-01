@@ -16,9 +16,17 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->integer('quantity');
-            $table->decimal('price');
-            $table->string('image')->nullable();
+            $table->decimal('priceSale');
+            $table->decimal('priceFav')->nullable();
+            $table->decimal('priceMax')->nullable();
+            $table->string('photo')->nullable();
+            $table->foreignId('provider_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('instagrammer_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->enum('status', ['Available', 'Unavailable']);
+            $table->enum('category', ['Clothing', 'Accessoiries','Home','Sport','Beauty','Electronics','Pets']);
             $table->timestamps();
+            
+
         });
     }
 

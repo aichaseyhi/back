@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\BackOffice;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Store;
 use Illuminate\Http\Request;
@@ -10,10 +11,16 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Role;
+use Illuminate\Support\Carbon;
 
 class UserController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['role:admin|superadmin']);
+    }
+    
     public function index()
     {
         $users = User::all();
@@ -29,7 +36,7 @@ class UserController extends Controller
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
             'password' => 'required|string|min:6|max:24|',
             'role' => 'required|string',
-            'birthday' => 'required', 'date',
+            'birthday' => 'required|date',
             'sexe' => ['required', 'in:male,female'],
             'status' => 'required',
         ];
@@ -50,18 +57,18 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->password = Hash::make($request->password);
-        $user->birthday = $request->birthday;
+        $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
         $user->sexe = $request->sexe;
         $user->status = $request->status;
         $user->save();
-        $user->assignRole($request->role);
+        $user->assignRole('client');
 
-        if ($request->role == 'provider-intern'){
+       /* if ($request->role == 'provider-intern'){
             $store = new Store();
             $store->name = $request->nameboutique;
             $store->provider_id = $user->id;
             $store->save();
-        }
+        }*/
 
         return response()->json([
             'message' => "successfully registered",

@@ -5,9 +5,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetRequestController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\StoreController;
-use App\Http\Controllers\ProduitController;
+use App\Http\Controllers\BackOffice\UserController;
+use App\Http\Controllers\BackOffice\ProduitController;
 
 
 
@@ -50,14 +49,7 @@ Route::delete('/destroy/{id}',[UserController::class, 'destroy']);
 
 
 
-//store
-Route::get('/stores',[StoreController::class, 'index']);
 
-Route::post('/saveStore',[StoreController::class, 'store']);
-
-Route::put('/updateStore/{id}',[StoreController::class, 'update']);
-
-Route::delete('/deleteStore/{id}',[StoreController::class, 'destroy']);
 
 
 //produit
