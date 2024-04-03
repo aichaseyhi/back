@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('echantillon', function (Blueprint $table) {
             $table->id();
             $table->foreignId('instagrammer_id')->nullable()->constrained('users')->cascadeOnDelete();
-            $table->foreignId('produit_id')->nullable()->constrained('produits')->cascadeOnDelete();
+            $table->foreignId('product_id')->nullable()->constrained('products')->cascadeOnDelete();
             $table->enum('payment', ['Free', 'Credit','CashOnDelivery']);
+            $table->enum('status', ['PENDING', 'SUCCESS','FAILED'])->default('PENDING');
             $table->timestamps();
             
 

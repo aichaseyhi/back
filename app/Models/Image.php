@@ -10,10 +10,10 @@ class Image extends Model
     use HasFactory;
     protected $table = 'images';
     protected $primaryKey = 'id';
-    protected $fillable = ['path','produit_id'];
+    protected $fillable = ['path','product_id'];
 
     public function product()
     {
-        return $this->belongsTo(Produit::class);
+        return $this->belongsTo(Product::class);
     }
 }

@@ -1,26 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\FrontOffice\Instagrammer;
+namespace App\Http\Controllers\BackOffice;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Echantillon;
 use App\Models\Image;
 use App\Models\Product;
-use App\Models\Store;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Auth;
 
-class ProductInstagrammerController extends Controller
+
+class ProductController extends Controller
 {
 
-      public function __construct()
+    public function __construct()
     {
-        $this->middleware('role:provider-intern');
+        $this->middleware('role:admin');
 
     }
-
     public function index()
     {
         $products = Product::all();
@@ -33,6 +30,9 @@ class ProductInstagrammerController extends Controller
             'description' => 'required',
             'quantity' => 'required|numeric',
             'priceSale' => 'required|numeric',
+            'priceFav' => 'required|numeric',
+            'priceMax' => 'required|numeric',
+           // 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category' => ['required', 'in:Clothing,Accessoiries,Home,Sport,Beauty,Electronics,Pets'],
             'status' => ['required', 'in:Available,Unavailable'],
             
@@ -44,15 +44,17 @@ class ProductInstagrammerController extends Controller
                 "status" => 400
             ]);
         }
-
+        
         $product = new Product();
         $product->name = $request->name;
         $product->description = $request->description;
         $product->quantity = $request->quantity;
         $product->priceSale = $request->priceSale;
+        $product->priceFav = $request->priceFav;
+        $product->priceMax = $request->priceMax;
         $product->category = $request->category;
         $product->status = $request->status;
-        $product->instagrammer_id =Auth::user()->id;
+        
 
         $product->save();
 
@@ -69,40 +71,9 @@ class ProductInstagrammerController extends Controller
             $productImage->save();
         }
 
-       if ($product->status === 'Available'){
-            $store = new Store();
-            $store->quantity = $product->quantity;
-            $store->product_id = $product->id;
-            $store->instagrammer_id = $product->instagrammer_id;
-            $store->save();
-        }
 
         return response()->json([
             'message' => 'Product created!',
-            "status" => Response::HTTP_CREATED
-        ]);
-    }
-
-    public function addEchantillon(Request $request)
-    {
-        $product = Product::find($request->product_id);
-
-        if (!$product) {
-            return response()->json([
-                'message' => 'Product not found',
-                'status' => Response::HTTP_NOT_FOUND
-            ]);
-        }
-        $echantillon = new Echantillon();
-        $echantillon->payment = $request->payment;
-        $echantillon->status = "PENDING";
-        $echantillon->product_id = $product->id;
-        $echantillon->instagrammer_id = $product->instagrammer_id;
-
-        $echantillon->save();
-
-        return response()->json([
-            'message' => "Successfully ",
             "status" => Response::HTTP_CREATED
         ]);
     }

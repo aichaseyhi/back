@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('quantity');
             $table->foreignId('instagrammer_id')->nullable()->constrained('users')->cascadeOnDelete();
-            $table->foreignId('produit_id')->nullable()->constrained('produits')->cascadeOnDelete();
+            $table->foreignId('product_id')->nullable()->constrained('products')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\Role;
-use App\Models\Produit;
+use App\Models\Product;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -29,6 +29,7 @@ class User extends Authenticatable implements JWTSubject
         'status',
         'birthday',
         'sexe',
+        'image'
     ];
 
     /**
@@ -66,9 +67,9 @@ class User extends Authenticatable implements JWTSubject
     }
   
 
-    public function produits()
+    public function products()
     {
-        return $this->hasMany(Produit::class);
+        return $this->hasMany(Product::class);
     }
   
 }

@@ -10,5 +10,5 @@ class Echantillon extends Model
     use HasFactory;
     protected $table = 'echantillon';
     protected $primaryKey = 'id';
-    protected $fillable = ['instagrammer_id','produit_id','payment'];
+    protected $fillable = ['instagrammer_id','product_id','payment','status'];
 }

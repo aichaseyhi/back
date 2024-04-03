@@ -1,26 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\BackOffice;
+namespace App\Http\Controllers\FrontOffice\Provider;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Image;
-use App\Models\Produit;
-use Illuminate\Http\Request;
+use App\Models\Product;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
-
-class ProduitController extends Controller
+class ProductProviderController extends Controller
 {
-
     public function __construct()
     {
-        $this->middleware('role:admin');
+        $this->middleware('role:provider-extern');
 
     }
     public function index()
     {
-        $produits = Produit::all();
+        $produits = Product::all();
         return response()->json($produits); 
     }   
     public function store(Request $request)
@@ -35,6 +34,7 @@ class ProduitController extends Controller
            // 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category' => ['required', 'in:Clothing,Accessoiries,Home,Sport,Beauty,Electronics,Pets'],
             'status' => ['required', 'in:Available,Unavailable'],
+            "provider_id" => 'required',
             
         ];
         $validator = Validator::make($request->all(), $rules);
@@ -45,18 +45,18 @@ class ProduitController extends Controller
             ]);
         }
         
-        $produit = new Produit();
-        $produit->name = $request->name;
-        $produit->description = $request->description;
-        $produit->quantity = $request->quantity;
-        $produit->priceSale = $request->priceSale;
-        $produit->priceFav = $request->priceFav;
-        $produit->priceMax = $request->priceMax;
-        $produit->category = $request->category;
-        $produit->status = $request->status;
-        
+        $product = new Product();
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->quantity = $request->quantity;
+        $product->priceSale = $request->priceSale;
+        $product->priceFav = $request->priceFav;
+        $product->priceMax = $request->priceMax;
+        $product->category = $request->category;
+        $product->status = $request->status;
+        $product->provider_id =Auth::user()->id;
 
-        $produit->save();
+        $product->save();
 
            // Enregistrer les images
            foreach ($request->file('photo') as $image) {
@@ -64,34 +64,34 @@ class ProduitController extends Controller
             $imageName = time() . '.' . $image->getClientOriginalExtension();
              $image->move(public_path('storage/products'), $imageName);
     
-            // Créer une nouvelle image associée au produit
+            // Créer une nouvelle image associée au product
             $productImage = new Image();
-            $productImage->produit_id = $produit->id;
+            $productImage->product_id = $product->id;
             $productImage->path = env('APP_URL') . '/storage/products/' . $imageName;
             $productImage->save();
         }
 
 
         return response()->json([
-            'message' => 'Produit created!',
+            'message' => 'product created!',
             "status" => Response::HTTP_CREATED
         ]);
     }
     public function show($id)
     {
-        $contact = Produit::find($id);
+        $contact = Product::find($id);
         return response()->json($contact);
     }
     public function update(Request $request, $id)
     {
-       $produits = Produit::find($id);
-       $produits->update($request->all());
-       return response()->json('Produit updated');
+       $products = Product::find($id);
+       $products->update($request->all());
+       return response()->json('Product updated');
     }
     public function destroy($id)
     {
-        $produits = Produit::find($id);
-        $produits->delete();
-        return response()->json('Produit deleted!');
+        $products = Product::find($id);
+        $products->delete();
+        return response()->json('Product deleted!');
     }
 }

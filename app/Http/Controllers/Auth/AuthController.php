@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Carbon\Carbon;
 use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
 use JWTAuth;
 use Exception;
@@ -21,7 +22,7 @@ class AuthController extends Controller
             'phone'=>'required', 'regex:/^[0-9]{8}$/',
             'email'=>'required|email|unique:users,email',
             'password'=>'required|min:6|max:24|',
-            'birthday' => 'required', 'date_format:Y-m-d',
+            'birthday' => 'required|date',
             'sexe' => ['required', 'in:male,female'],
             'status' => 'required',
             'role'=>'required',
@@ -32,19 +33,19 @@ class AuthController extends Controller
         $user->phone = $request->phone;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->birthday = $request->birthday;
+        $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
         $user->sexe = $request->sexe;
         $user->status = $request->status;
 
         $user->save();
         $user->assignRole($request->role);
 
-        if ($request->role == 'provider-intern'){
+       /* if ($request->role == 'provider-intern'){
             $store = new Store();
             $store->name = $request->nameboutique;
             $store->provider_id = $user->id;
             $store->save();
-        }
+        }*/
         
         return response()->json('User Created');
     }

@@ -23,7 +23,11 @@ class UserController extends Controller
     
     public function index()
     {
-        $users = User::all();
+        $query = User::query();
+        $query->orderBy('name', 'asc');
+
+        $users = $query->get();
+
         return response()->json($users, 200);
     }
 
@@ -38,7 +42,7 @@ class UserController extends Controller
             'role' => 'required|string',
             'birthday' => 'required|date',
             'sexe' => ['required', 'in:male,female'],
-            'status' => 'required',
+            'status' => ['required', 'in:ACTIVE,INACTIVE'],
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -61,7 +65,7 @@ class UserController extends Controller
         $user->sexe = $request->sexe;
         $user->status = $request->status;
         $user->save();
-        $user->assignRole('client');
+        $user->assignRole($request->role);
 
        /* if ($request->role == 'provider-intern'){
             $store = new Store();
@@ -103,6 +107,25 @@ class UserController extends Controller
     {
         $userRole = User::role($Role)->get();
         return response()->json( $userRole);
+    }
+
+    public function filterUser(Request $request)
+    {
+        $query = User::query();
+
+    // Filtrage par nom
+    if ($request->has('name')) {
+        $query->where('name', 'like', '%' . $request->input('name') . '%');
+    }
+
+    // Filtrage par e-mail
+    if ($request->has('email')) {
+        $query->where('email', $request->input('email'));
+    }
+
+    $users = $query->get();
+
+    return response()->json($users, 200);
     }
 
 }

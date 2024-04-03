@@ -6,9 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetRequestController;
 use App\Http\Controllers\BackOffice\UserController;
-use App\Http\Controllers\BackOffice\ProduitController;
-
-
+use App\Http\Controllers\BackOffice\ProductController;
+use App\Http\Controllers\FrontOffice\Instagrammer\ProductInstagrammerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,26 +36,44 @@ Route::controller(AuthController::class)->group(function () {
 
 
 //user
-Route::post('/reset-password-request', [PasswordResetRequestController::class, 'sendPasswordResetEmail']);
-Route::post('/change-password', [ChangePasswordController::class, 'passwordResetProcess']);
-Route::get('/user/{Role}',[UserController::class, 'getUsersByRole']);
+Route::prefix('users')->group(function () {
+  Route::post('/reset-password-request', [PasswordResetRequestController::class, 'sendPasswordResetEmail']);
+  Route::post('/change-password', [ChangePasswordController::class, 'passwordResetProcess']);
+  Route::get('/user/{Role}',[UserController::class, 'getUsersByRole']);
 
-Route::get('/users',[UserController::class, 'index']);
+  Route::get('/',[UserController::class, 'index']);
 
-Route::post('/save',[UserController::class, 'store']);
-Route::get('/show/{id}',[UserController::class, 'show']);
-Route::delete('/destroy/{id}',[UserController::class, 'destroy']);
-
-
-
-
+  Route::post('/save',[UserController::class, 'store']);
+  Route::get('/show/{id}',[UserController::class, 'show']);
+  Route::delete('/destroy/{id}',[UserController::class, 'destroy']);
+  Route::get('/filter', [UserController::class, 'filterUser']);
+});
 
 
-//produit
-Route::get('/produits',[ProduitController::class, 'index']);
+//product
+Route::prefix('products')->group(function () {
+  Route::get('/', [ProductController::class, 'index']);
+  Route::post('/save', [ProductController::class, 'store']);
+  Route::put('/update/{id}', [ProductController::class, 'update']);
+  Route::delete('/delete/{id}', [ProductController::class, 'destroy']);
+});
 
-Route::post('/saveProduit',[ProduitController::class, 'store']);
+//instagrammer
 
-Route::put('/updateProduit/{id}',[ProduitController::class, 'update']);
+Route::prefix('instagrammers')->group(function(){
+  Route::get('products', [ProductInstagrammerController::class, 'index']);
+  Route::post('/saveProduct', [ProductInstagrammerController::class, 'store']);
+  Route::put('/updateProduct/{id}', [ProductInstagrammerController::class, 'update']);
+  Route::delete('/deleteProduct/{id}', [ProductInstagrammerController::class, 'destroy']);
+  Route::post('/addEchantillon', [ProductInstagrammerController::class, 'addEchantillon']);
 
-Route::delete('/deleteProduit/{id}',[ProduitController::class, 'destroy']);
+});
+
+//providers
+
+Route::prefix('providers')->group(function(){
+  Route::get('products', [ProductInstagrammerController::class, 'index']);
+  Route::post('/saveProduct', [ProductInstagrammerController::class, 'store']);
+  Route::put('/updateProduct/{id}', [ProductInstagrammerController::class, 'update']);
+  Route::delete('/deleteProduct/{id}', [ProductInstagrammerController::class, 'destroy']);
+});
