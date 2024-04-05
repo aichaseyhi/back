@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone');
             $table->string('image')->nullable();
-            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+            $table->enum('status', ['ACTIVE', 'INACTIVE','PENDING'])->default('PENDING');
             $table->date('birthday')->nullable();
-            $table->enum('sexe', ['female', 'male']);
+            $table->enum('sexe', ['female', 'male'])->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

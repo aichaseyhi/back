@@ -25,7 +25,8 @@ class ProductInstagrammerController extends Controller
     {
         $products = Product::all();
         return response()->json($products); 
-    }   
+    }  
+   
     public function store(Request $request)
     {
         $rules = [
@@ -72,6 +73,7 @@ class ProductInstagrammerController extends Controller
        if ($product->status === 'Available'){
             $store = new Store();
             $store->quantity = $product->quantity;
+            $store->price =$product->priceSale;
             $store->product_id = $product->id;
             $store->instagrammer_id = $product->instagrammer_id;
             $store->save();
@@ -83,29 +85,6 @@ class ProductInstagrammerController extends Controller
         ]);
     }
 
-    public function addEchantillon(Request $request)
-    {
-        $product = Product::find($request->product_id);
-
-        if (!$product) {
-            return response()->json([
-                'message' => 'Product not found',
-                'status' => Response::HTTP_NOT_FOUND
-            ]);
-        }
-        $echantillon = new Echantillon();
-        $echantillon->payment = $request->payment;
-        $echantillon->status = "PENDING";
-        $echantillon->product_id = $product->id;
-        $echantillon->instagrammer_id = $product->instagrammer_id;
-
-        $echantillon->save();
-
-        return response()->json([
-            'message' => "Successfully ",
-            "status" => Response::HTTP_CREATED
-        ]);
-    }
     public function show($id)
     {
         $contact = Product::find($id);

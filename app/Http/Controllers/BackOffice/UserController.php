@@ -42,7 +42,6 @@ class UserController extends Controller
             'role' => 'required|string',
             'birthday' => 'required|date',
             'sexe' => ['required', 'in:male,female'],
-            'status' => ['required', 'in:ACTIVE,INACTIVE'],
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -51,11 +50,9 @@ class UserController extends Controller
                 "status" => 400
             ]);
         }
-        // $data = $request->only('name', 'email', 'phone', 'password','role');
 
 
         $user = new User();
-
 
         $user->name = $request->name;
         $user->email = $request->email;
@@ -63,16 +60,8 @@ class UserController extends Controller
         $user->password = Hash::make($request->password);
         $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
         $user->sexe = $request->sexe;
-        $user->status = $request->status;
         $user->save();
         $user->assignRole($request->role);
-
-       /* if ($request->role == 'provider-intern'){
-            $store = new Store();
-            $store->name = $request->nameboutique;
-            $store->provider_id = $user->id;
-            $store->save();
-        }*/
 
         return response()->json([
             'message' => "successfully registered",
@@ -102,6 +91,39 @@ class UserController extends Controller
         return response(null, 204);
     }
 
+    public function update(Request $request, $id)
+    {
+        //valdiate
+        // $rules = [];
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => ['required|email|unique:users,email|regex:/^[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}$/ '],
+            'phone' => ['required', 'regex:/^[0-9]{8}$/'],
+            'birthday' => ['required|date'],
+            'sexe' => ['required', 'in:male,female'],
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                $validator->errors(),
+                "status" => 400
+            ]);
+        }
+        $user = User::users()->find($id);
+        if (is_null($user)) {
+            return response()->json(
+                [
+                    'message' => 'utilisateur introuvable',
+                    "status" => "404"
+                ]
+            );
+        }
+        $user->update($request->only('name', 'email', 'phone', 'birthday', 'sexe', 'status'));
+        return response()->json([
+            "message" => "Updated Successefully",
+            "status" => 200,
+        ]);
+    }
+
  
     public function getUsersByRole($Role)
     {
@@ -126,6 +148,28 @@ class UserController extends Controller
     $users = $query->get();
 
     return response()->json($users, 200);
+    }
+
+    public function updateUserStatus(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|in:ACTIVE,INACTIVE,PENDING',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $user->status = $request->input('status');
+        $user->save();
+
+        return response()->json(['message' => 'User status updated successfully'], 200);
     }
 
 }

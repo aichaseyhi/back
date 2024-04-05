@@ -4,6 +4,7 @@ namespace App\Http\Controllers\FrontOffice\Provider;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Echantillon;
 use App\Models\Image;
 use App\Models\Product;
 use Illuminate\Http\Response;
@@ -34,7 +35,7 @@ class ProductProviderController extends Controller
            // 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category' => ['required', 'in:Clothing,Accessoiries,Home,Sport,Beauty,Electronics,Pets'],
             'status' => ['required', 'in:Available,Unavailable'],
-            "provider_id" => 'required',
+            
             
         ];
         $validator = Validator::make($request->all(), $rules);
@@ -77,6 +78,7 @@ class ProductProviderController extends Controller
             "status" => Response::HTTP_CREATED
         ]);
     }
+   
     public function show($id)
     {
         $contact = Product::find($id);

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('store', function (Blueprint $table) {
             $table->id();
             $table->integer('quantity');
+            $table->decimal('price');
             $table->foreignId('instagrammer_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('product_id')->nullable()->constrained('products')->cascadeOnDelete();
             $table->timestamps();
