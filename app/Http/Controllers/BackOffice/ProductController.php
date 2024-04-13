@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\ProductResource;
 
 
 class ProductController extends Controller
@@ -21,7 +22,12 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return response()->json($products); 
+        return response()->json([
+            'message' => 'List Products !',
+            "status" => Response::HTTP_CREATED,
+            "data" =>  ProductResource::collection($products)
+        ]);
+
     }   
     public function store(Request $request)
     {
@@ -35,6 +41,7 @@ class ProductController extends Controller
            // 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category' => ['required', 'in:Clothing,Accessoiries,Home,Sport,Beauty,Electronics,Pets'],
             'status' => ['required', 'in:Available,Unavailable'],
+            'FreeEchantillon' => 'required|boolean',
             
         ];
         $validator = Validator::make($request->all(), $rules);
@@ -54,7 +61,7 @@ class ProductController extends Controller
         $product->priceMax = $request->priceMax;
         $product->category = $request->category;
         $product->status = $request->status;
-        
+        $product->FreeEchantillon = $request->FreeEchantillon;
 
         $product->save();
 
@@ -74,7 +81,8 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Product created!',
-            "status" => Response::HTTP_CREATED
+            "status" => Response::HTTP_CREATED,
+            "data" => new ProductResource($product)
         ]);
     }
     public function show($id)
