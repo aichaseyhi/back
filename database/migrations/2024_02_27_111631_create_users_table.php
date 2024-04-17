@@ -22,6 +22,11 @@ return new class extends Migration
             $table->enum('status', ['ACTIVE', 'INACTIVE','PENDING'])->default('PENDING');
             $table->date('birthday')->nullable();
             $table->enum('sexe', ['female', 'male'])->nullable();
+            $table->enum('poste', ['administrateur', 'operateur'])->nullable();
+            $table->string('street')->nullable();
+            $table->string('city')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->string('country')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

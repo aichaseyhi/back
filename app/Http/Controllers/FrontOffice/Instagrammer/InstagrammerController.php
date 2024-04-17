@@ -62,15 +62,24 @@ class InstagrammerController extends Controller
                 'status' => Response::HTTP_NOT_FOUND
             ]);
         }
-        $store = new Store();
-        $store->quantity = $request->quantity;
-        $store->price =$request->price;
-        $store->product_id = $product->id;
-        $store->instagrammer_id =  Auth::user()->id;
-        $store->save();
-        return response()->json([
-            'message' => "Successfully ",
-            "status" => Response::HTTP_CREATED
-        ]); 
+        if($product->quantity >= $request->quantity && $product->status == "Available"){
+            $product->quantity -= $request->quantity; 
+            $product->save();
+            $store = new Store();
+            $store->quantity = $request->quantity;
+            $store->price =$request->price;
+            $store->product_id = $product->id;
+            $store->instagrammer_id =  Auth::user()->id;
+            $store->save();
+            return response()->json([
+                'message' => "Successfully ",
+                "status" => Response::HTTP_CREATED
+            ]); 
+        } else {
+            return response()->json([
+                'message' => 'Product quantity is insufficient or status is not "disponible"',
+                'status' => Response::HTTP_BAD_REQUEST
+            ]);
+        }
     }
 }

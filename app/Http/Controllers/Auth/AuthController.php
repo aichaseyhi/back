@@ -26,8 +26,8 @@ class AuthController extends Controller
             'phone'=>['required', 'regex:/^[0-9]{8}$/'],
             'email'=>'required|email|unique:users,email|',
             'password'=>'required|min:6|max:24|',
-            'birthday' => 'required|date',
-            'sexe' => ['required', 'in:male,female'],
+            'birthday' => 'nullable|date',
+            'sexe' => ['nullable', 'in:male,female'],
             'role'=>'required',
             'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);

@@ -20,6 +20,8 @@ class Product extends Model
         'photo',
         'category',
         'status',
+        'taille',
+        'color',
         'provider_id',
         'instagrammer_id'];   
 

@@ -40,8 +40,9 @@ class UserController extends Controller
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
             'password' => 'required|string|min:6|max:24|',
             'role' => 'required|string',
-            'birthday' => 'required|date',
-            'sexe' => ['required', 'in:male,female'],
+            'birthday' => 'nullable|date',
+            'sexe' => ['nullable', 'in:male,female'],
+            'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -51,7 +52,12 @@ class UserController extends Controller
             ]);
         }
 
-
+        $imageName = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('storage/users'), $imageName);
+        }
         $user = new User();
 
         $user->name = $request->name;
@@ -60,6 +66,8 @@ class UserController extends Controller
         $user->password = Hash::make($request->password);
         $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
         $user->sexe = $request->sexe;
+        $user->image = $imageName ? env('APP_URL') . '/storage/users/' . $imageName : null;
+
         $user->save();
         $user->assignRole($request->role);
 

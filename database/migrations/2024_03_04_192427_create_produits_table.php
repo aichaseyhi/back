@@ -20,6 +20,8 @@ return new class extends Migration
             $table->decimal('priceFav')->nullable();
             $table->decimal('priceMax')->nullable();
             $table->string('photo')->nullable();
+            $table->string('taille')->nullable();
+            $table->string('color')->nullable();
             $table->foreignId('provider_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('instagrammer_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->enum('status', ['Available', 'Unavailable']);
