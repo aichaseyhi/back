@@ -41,7 +41,7 @@ class ProductController extends Controller
            // 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category' => ['required', 'in:Clothing,Accessoiries,Home,Sport,Beauty,Electronics,Pets'],
             'status' => ['required', 'in:Available,Unavailable'],
-            'FreeEchantillon' => 'required|boolean',
+            
             
         ];
         $validator = Validator::make($request->all(), $rules);
