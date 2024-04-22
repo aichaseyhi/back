@@ -20,13 +20,13 @@ return new class extends Migration
             $table->decimal('priceFav')->nullable();
             $table->decimal('priceMax')->nullable();
             $table->string('photo')->nullable();
-            $table->string('taille')->nullable();
-            $table->string('color')->nullable();
+            $table->string('reference')->unique();
+            $table->string('brand')->nullable();
             $table->foreignId('provider_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('instagrammer_id')->nullable()->constrained('users')->cascadeOnDelete();
-            $table->enum('status', ['Available', 'Unavailable']);
+            $table->enum('status', ['INSTOCK', 'OUTSTOCK']);
             $table->enum('category', ['Clothing', 'Accessoiries','Home','Sport','Beauty','Electronics','Pets']);
-            $table->boolean('FreeEchantillon')->nullable()->default(true);
+            $table->enum('echantillon', ['FREE', 'PAID','REFUNDED']);
             $table->timestamps();
             
 

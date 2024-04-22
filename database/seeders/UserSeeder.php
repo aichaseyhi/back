@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             'email' => 'superadmin@gmail.com',
             'password' => Hash::make('superadmin'),
             'status' =>'ACTIVE',
-            'sexe' => 'male'
+            
 
         ]);
 
@@ -33,13 +33,35 @@ class UserSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => Hash::make('adminadmin'),
             'status' =>'ACTIVE',
-            'sexe' => 'male'
+           
 
         ]);
 
         $user->assignRole('admin');
 
-        
+        $user = User::create([
+            'name' => 'instagrameur',
+            'phone' => '20123123',
+            'email' => 'instagrameur@gmail.com',
+            'password' => Hash::make('instagrameur'),
+            'status' =>'ACTIVE',
+            
+
+        ]);
+
+        $user->assignRole('provider-intern');
+
+        $user = User::create([
+            'name' => 'fournisseur',
+            'phone' => '20123123',
+            'email' => 'fournisseur@gmail.com',
+            'password' => Hash::make('fournisseur'),
+            'status' =>'ACTIVE',
+           
+
+        ]);
+
+        $user->assignRole('provider-extern');
         
     }
 }

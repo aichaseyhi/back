@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('echantillon', function (Blueprint $table) {
+        Schema::create('colors_products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('instagrammer_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('color_id')->nullable()->constrained('colors')->cascadeOnDelete();
             $table->foreignId('product_id')->nullable()->constrained('products')->cascadeOnDelete();
-            $table->enum('payment', ['Credit','CashOnDelivery']);
-            $table->enum('status', ['PENDING', 'SUCCESS','FAILED'])->default('PENDING');
             $table->timestamps();
-            
-
         });
     }
 
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('echantillon');
+        Schema::dropIfExists('colors_products');
     }
 };

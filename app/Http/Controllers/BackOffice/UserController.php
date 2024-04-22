@@ -40,9 +40,17 @@ class UserController extends Controller
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
             'password' => 'required|string|min:6|max:24|',
             'role' => 'required|string',
-            'birthday' => 'nullable|date',
-            'sexe' => ['nullable', 'in:male,female'],
+            'poste' => ['nullable', 'in:administrator,operator'],
             'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'acountLink'=> 'nullable|string',
+            'street'=> 'nullable|string',
+            'city'=> 'nullable|string',
+            'post_code'=> ['nullable', 'regex:/^[0-9]{4}$/'],
+            'CIN'=> ['nullable', 'regex:/^[0-9]{8}$/'],
+            'TAXNumber'=> 'nullable|required_if:companyUnderConstruction,false|regex:/^[0-9]{8}$/',
+            'companyName'=> 'nullable|string',
+            'companyUnderConstruction'=> 'nullable|boolean',
+
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -64,9 +72,17 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->password = Hash::make($request->password);
-        $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
-        $user->sexe = $request->sexe;
+       // $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
         $user->image = $imageName ? env('APP_URL') . '/storage/users/' . $imageName : null;
+        $user->acountLink = $request->acountLink;
+        $user->street = $request->street;
+        $user->city = $request->city;
+        $user->post_code = $request->post_code;
+        $user->CIN = $request->CIN;
+        $user->TAXNumber = $request->TAXNumber;
+        $user->companyName = $request->companyName;
+        $user->companyUnderConstruction = $request->companyUnderConstruction;
+
 
         $user->save();
         $user->assignRole($request->role);
