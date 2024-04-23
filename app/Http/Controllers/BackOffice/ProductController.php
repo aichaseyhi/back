@@ -9,7 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\ProductResource;
-
+use App\Models\Color;
+use App\Models\Size;
+use Illuminate\Support\Str; 
 
 class ProductController extends Controller
 {
@@ -39,10 +41,11 @@ class ProductController extends Controller
             'priceFav' => 'required|numeric',
             'priceMax' => 'required|numeric',
            // 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category' => ['required', 'in:Clothing,Accessoiries,Home,Sport,Beauty,Electronics,Pets'],
-            'status' => ['required', 'in:Available,Unavailable'],
-            
-            
+            'brand' => 'required|string',
+           // 'reference' => 'required|string|unique:products,reference',
+            'category' => ['required', 'in:CLOTHING,ACCESSOIRIES,HOME,SPORT,BEAUTY,ELECTRONICS,PETS'],
+            'status' => ['required', 'in:INSTOCK,OUTSTOCK'],
+            'echantillon' => ['required', 'in:FREE,PAID,REFUNDED'],
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -59,12 +62,21 @@ class ProductController extends Controller
         $product->priceSale = $request->priceSale;
         $product->priceFav = $request->priceFav;
         $product->priceMax = $request->priceMax;
+        $product->brand = $request->brand;
         $product->category = $request->category;
         $product->status = $request->status;
-        $product->FreeEchantillon = $request->FreeEchantillon;
+        $product->echantillon = $request->echantillon;
+        $product->reference = Str::random(8);
 
         $product->save();
-
+        foreach ($request->colors as $color_id) {
+            $color = Color::find($color_id);
+            $product->colors()->attach($color);
+        }
+        foreach ($request->sizes as $size_id) {
+            $size = Size::find($size_id);
+            $product->sizes()->attach($size);
+        }
            // Enregistrer les images
            foreach ($request->file('photo') as $image) {
             $imagePath = $image->store('photo');

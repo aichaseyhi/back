@@ -23,7 +23,11 @@ class ProductResource extends JsonResource
             'priceFav' => $this->priceFav,
             'priceMax' => $this->priceMax,
             'status' => $this->status,
-            'category' =>$this->category
+            'category' =>$this->category,
+            'reference' =>$this->reference,
+            'colors' =>$this->colors,
+            'sizes' =>$this->sizes,
+            'images' =>$this->images,
 
         ];
         
