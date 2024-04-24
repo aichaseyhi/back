@@ -47,7 +47,7 @@ class UserController extends Controller
             'city'=> 'nullable|string',
             'post_code'=> ['nullable', 'regex:/^[0-9]{4}$/'],
             'CIN'=> ['nullable', 'regex:/^[0-9]{8}$/'],
-            'TAXNumber'=> 'nullable|required_if:companyUnderConstruction,false|regex:/^[0-9]{8}$/',
+            'TAXNumber'=> 'nullable|regex:/^[0-9]{8}$/',
             'companyName'=> 'nullable|string',
             'companyUnderConstruction'=> 'nullable|boolean',
 
@@ -79,10 +79,11 @@ class UserController extends Controller
         $user->city = $request->city;
         $user->post_code = $request->post_code;
         $user->CIN = $request->CIN;
-        $user->TAXNumber = $request->TAXNumber;
         $user->companyName = $request->companyName;
         $user->companyUnderConstruction = $request->companyUnderConstruction;
-
+        if ($request->companyUnderConstruction == false) {
+            $user->TAXNumber  = $request->TAXNumber;
+        } 
 
         $user->save();
         $user->assignRole($request->role);

@@ -69,15 +69,14 @@ class ProductInstagrammerController extends Controller
             $productImage->path = env('APP_URL') . '/storage/products/' . $imageName;
             $productImage->save();
         }
-
-       if ($product->status === 'Available'){
+      
             $store = new Store();
             $store->quantity = $product->quantity;
             $store->price =$product->priceSale;
             $store->product_id = $product->id;
             $store->instagrammer_id = $product->instagrammer_id;
             $store->save();
-        }
+        
 
         return response()->json([
             'message' => 'Product created!',

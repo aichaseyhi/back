@@ -26,7 +26,7 @@ return new class extends Migration
             $table->foreignId('instagrammer_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->enum('status', ['INSTOCK', 'OUTSTOCK']);
             $table->enum('category', ['CLOTHING', 'ACCESSOIRIES','HOME','SPORT','BEAUTY','ELECTRONICS','PETS']);
-            $table->enum('echantillon', ['FREE', 'PAID','REFUNDED']);
+            $table->enum('echantillon', ['FREE', 'PAID','REFUNDED'])->nullable();
             $table->timestamps();
             
 

@@ -21,17 +21,32 @@ class AuthController extends Controller
 
     
     public  function register(Request $request){
-        $request->validate([
+        $rules = [
             'name'=>'required',
             'phone'=>['required', 'regex:/^[0-9]{8}$/'],
             'email'=>'required|email|unique:users,email|',
             'password'=>'required|min:6|max:24|',
-            'birthday' => 'nullable|date',
-            'sexe' => ['nullable', 'in:male,female'],
+            //'birthday' => 'nullable|date',
+           // 'sexe' => ['nullable', 'in:male,female'],
             'role'=>'required',
             'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-        
+            'acountLink'=> 'nullable|string',
+            'street'=> 'nullable|string',
+            'city'=> 'nullable|string',
+            'post_code'=> ['nullable', 'regex:/^[0-9]{4}$/'],
+            'CIN'=> ['nullable', 'regex:/^[0-9]{8}$/'],
+            'TAXNumber'=> 'nullable|regex:/^[0-9]{8}$/',
+            'companyName'=> 'nullable|string',
+            'companyUnderConstruction'=> 'nullable|boolean',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                $validator->errors(),
+                "status" => 400
+            ]);
+        }
         $imageName = null;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -44,15 +59,22 @@ class AuthController extends Controller
         $user->phone = $request->phone;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
-        $user->sexe = $request->sexe;
+       // $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
+       // $user->sexe = $request->sexe;
         $user->image = $imageName ? env('APP_URL') . '/storage/users/' . $imageName : null;
-       
+        $user->acountLink = $request->acountLink;
+        $user->street = $request->street;
+        $user->city = $request->city;
+        $user->post_code = $request->post_code;
+        $user->CIN = $request->CIN;
+        $user->companyName = $request->companyName;
+        $user->companyUnderConstruction = $request->companyUnderConstruction;
+        if ($request->companyUnderConstruction == false) {
+            $user->TAXNumber  = $request->TAXNumber;
+        } 
 
         $user->save();
         $user->assignRole($request->role);
-
-      
         
         return response()->json('User Created');
     }
