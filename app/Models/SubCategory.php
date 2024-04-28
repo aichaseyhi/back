@@ -11,5 +11,10 @@ class SubCategory extends Model
 
     protected $table = 'subcategories';
     protected $primaryKey = 'id';
-    protected $fillable = ['name', 'type', 'product_id'];   
+    protected $fillable = ['name', 'type'];  
+    
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
 }

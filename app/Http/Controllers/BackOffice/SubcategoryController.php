@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BackOffice;
 use App\Http\Controllers\Controller;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SubcategoryController extends Controller
 {
@@ -15,10 +16,22 @@ class SubcategoryController extends Controller
     }   
     public function store(Request $request)
     {
-        $subcategories = new SubCategory([
-            'name' => $request->input('name'),
-            'matiere_id' => $request->input('matiere_id'),
-        ]);
+        $rules = [
+            'name' => 'required|string',
+            'type' => 'required|string',
+           
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                $validator->errors(),
+                "status" => 400
+            ]);
+        }
+        $subcategories = new SubCategory();
+        $subcategories->name  = $request->name;
+        $subcategories->type  = $request->type;
+       
         $subcategories->save();
         return response()->json('SubCategory created!');
     }

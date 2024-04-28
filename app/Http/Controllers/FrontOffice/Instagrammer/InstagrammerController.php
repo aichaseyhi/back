@@ -4,7 +4,9 @@ namespace App\Http\Controllers\FrontOffice\Instagrammer;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MessageResource;
 use App\Models\Echantillon;
+use App\Models\Message;
 use App\Models\Product;
 use App\Models\Store;
 use Illuminate\Http\Response;
@@ -81,5 +83,31 @@ class InstagrammerController extends Controller
                 'status' => Response::HTTP_BAD_REQUEST
             ]);
         }
+    }
+
+    public function sendMessage(Request $request)
+    {
+        $rules = [
+            'message' => 'required|string',
+            
+           
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                $validator->errors(),
+                "status" => 400
+            ]);
+        }
+        $messages = new Message();
+        $messages->message  = $request->message;
+        $messages->sender_id  = Auth::user()->id;
+       
+        $messages->save();
+        return response()->json([
+            'message' => 'Message created!',
+            "status" => Response::HTTP_CREATED,
+            "data" => new MessageResource($messages)
+        ]);
     }
 }

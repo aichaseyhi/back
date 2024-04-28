@@ -5,8 +5,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetRequestController;
+use App\Http\Controllers\BackOffice\MessageController;
 use App\Http\Controllers\BackOffice\UserController;
 use App\Http\Controllers\BackOffice\ProductController;
+use App\Http\Controllers\BackOffice\SubcategoryController;
 use App\Http\Controllers\FrontOffice\Instagrammer\ProductInstagrammerController;
 use App\Http\Controllers\FrontOffice\Instagrammer\InstagrammerController;
 use App\Http\Controllers\FrontOffice\Provider\ProductProviderController;
@@ -52,7 +54,7 @@ Route::prefix('users')->group(function () {
   Route::delete('/update/{id}',[UserController::class, 'update']);
   Route::get('/filter', [UserController::class, 'filterUser']);
   Route::put('/updateUserStatus/{id}', [UserController::class, 'updateUserStatus']);
-
+  Route::get('/messages', [MessageController::class, 'index']);
 });
 
 
@@ -62,6 +64,16 @@ Route::prefix('products')->group(function () {
   Route::post('/save', [ProductController::class, 'store']);
   Route::put('/update/{id}', [ProductController::class, 'update']);
   Route::delete('/delete/{id}', [ProductController::class, 'destroy']);
+  Route::get('filterProduct', [ProductController::class, 'filterProduct']);
+
+});
+
+//subCategory
+Route::prefix('subCategories')->group(function () {
+  Route::get('/', [SubcategoryController::class, 'index']);
+  Route::post('/save', [SubcategoryController::class, 'store']);
+  Route::put('/update/{id}', [SubcategoryController::class, 'update']);
+  Route::delete('/delete/{id}', [SubcategoryController::class, 'destroy']);
 });
 
 //instagrammer
@@ -74,6 +86,8 @@ Route::prefix('instagrammers')->group(function(){
   Route::post('/addEchantillon', [InstagrammerController::class, 'addEchantillon']);
   Route::post('/addProductProvider', [InstagrammerController::class, 'addProductProvider']);
   Route::get('/getInstagrammerProducts', [InstagrammerController::class, 'getInstagrammerProducts']);
+  Route::post('/sendMessage', [InstagrammerController::class, 'sendMessage']);
+
 
 });
 

@@ -43,5 +43,10 @@ class Product extends Model
         {
             return $this->belongsToMany(Size::class);
         }
+
+        public function subcategories()
+        {
+            return $this->belongsToMany(SubCategory::class);
+        }
 }
 

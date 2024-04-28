@@ -41,6 +41,7 @@ class UserController extends Controller
             'password' => 'required|string|min:6|max:24|',
             'role' => 'required|string',
             'poste' => ['nullable', 'in:administrator,operator'],
+            'status' => ['nullable', 'in:ACTIVE,INACTIVE,PENDING'],
             'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'acountLink'=> 'nullable|string',
             'street'=> 'nullable|string',
@@ -74,6 +75,8 @@ class UserController extends Controller
         $user->password = Hash::make($request->password);
        // $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
         $user->image = $imageName ? env('APP_URL') . '/storage/users/' . $imageName : null;
+        $user->status = $request->status;
+        $user->poste = $request->poste;
         $user->acountLink = $request->acountLink;
         $user->street = $request->street;
         $user->city = $request->city;

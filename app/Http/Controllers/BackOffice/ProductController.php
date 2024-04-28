@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\ProductResource;
 use App\Models\Color;
 use App\Models\Size;
+use App\Models\SubCategory;
 use Illuminate\Support\Str; 
 
 class ProductController extends Controller
@@ -77,6 +78,10 @@ class ProductController extends Controller
             $size = Size::find($size_id);
             $product->sizes()->attach($size);
         }
+        foreach ($request->subcategories as $subcategory_id) {
+            $subcategory = SubCategory::find($subcategory_id);
+            $product->subcategories()->attach($subcategory);
+        }
            // Enregistrer les images
            foreach ($request->file('photo') as $image) {
             $imagePath = $image->store('photo');
@@ -114,4 +119,38 @@ class ProductController extends Controller
         $products->delete();
         return response()->json('Product deleted!');
     }
+
+    public function searchProduct(Request $request)
+    {
+
+        $search = $request->has('search') ? $request->input('search') : "";
+        $category = $request->has('category') ? $request->input('category') : "";
+
+       
+        $products = Product::where('category', 'like', '%' . $category . '%')
+            ->where(function ($q) use ($search) {
+
+                $q->Where('name', 'LIKE', "%{$search}%");
+                   
+            })
+            ->get();
+
+
+        return response()->json($products);
+    }
+   
+    public function filterProduct(Request $request)
+{
+    // Récupération du paramètre de catégorie
+    $category = $request->input('category');
+
+    if (!$category) {
+        return response()->json(['error' => 'Le paramètre de catégorie est obligatoire.'], 400);
+    }
+
+    // Recherche des produits en fonction de la catégorie
+    $products = Product::where('category', $category)->get();
+
+    return response()->json($products);
+}
 }

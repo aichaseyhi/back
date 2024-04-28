@@ -28,6 +28,7 @@ class ProductResource extends JsonResource
             'colors' =>$this->colors,
             'sizes' =>$this->sizes,
             'images' =>$this->images,
+            'subcategories' =>$this->subcategories,
 
         ];
         
