@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Validator;
 
 class SubcategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['role:admin|superadmin']);
+    }
     public function index()
     {
         $subcategories = SubCategory::all();

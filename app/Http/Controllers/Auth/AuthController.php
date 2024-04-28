@@ -12,9 +12,12 @@ use JWTAuth;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\Rule;
+use App\Mail\forgetPasswordCode;
+use App\Models\verification_code;
 
 class AuthController extends Controller
 {
@@ -125,60 +128,139 @@ class AuthController extends Controller
             'user' => Auth::user(),
         ]);
     }
-    public function update(Request $request, $id)
-{
-    $validator = Validator::make($request->all(), [
-        'name' => 'required|string',
-        'email' => [
-            'required',
-            'string',
-            Rule::unique('users')->ignore($id),
-            'email'
-        ],
-        'phone' => ['required', 'regex:/^[0-9]{8}$/'],
-        'birthday' => ['required', 'date'],
-        'sexe' => ['required', 'in:male,female'],
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    ]);
+   
 
-    if ($validator->fails()) {
-        return response()->json([
-            'errors' => $validator->errors(),
-            "status" => 400
+//forget password section >>>
+    // generate random code 
+    function randomcode($_length)
+    {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+        $pass = array();
+        $alphaLength = strlen($alphabet) - 1;
+        for ($i = 0; $i < $_length; $i++) {
+            $n = rand(0, $alphaLength);
+            $pass[] = $alphabet[$n];
+        }
+        return implode($pass); //turn the array into a string
+    }
+
+    // send random code to virif mail
+    public function forgetPassWord(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'email' => [
+                'required',
+                'email',
+                function ($attribute, $value, $fail) {
+                    if (!User::where('email', $value)->exists() ) {
+                        $fail('The selected email is invalid.');
+                    }
+                },
+            ],
         ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                $validator->errors(),
+                "status" => 400
+            ]);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        $code = self::randomcode(4);
+        // make old codes expired
+        verification_code::where(["email" => $request->email, "status" => "pending"])->update(["status" => "expired"]);
+        if ($user) {
+            $data = [
+                "email" => $request->email,
+                "name" => $user->name,
+                "code" => $code,
+                "subject" => "forget password",
+            ];
+            Mail::to($data["email"])->send(new forgetPasswordCode($data));
+            $verifTable = new verification_code();
+            $verifTable->email = $request->email;
+            $verifTable->code = $code;
+            $verifTable->status = "pending";
+            $verifTable->save();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $data,
+                'new code' => $verifTable,
+            ]);
+        }
+    } 
+    public function changePassword(Request $request)
+    {
+        $user = User::find(auth()->user()->id);
+
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        // Chiffrer le nouveau mot de passe
+        $password_hashed = Hash::make($request->password);
+
+        // Mettre à jour le mot de passe dans la base de données
+        $user->password = $password_hashed;
+        $user->save();
+
+        return response()->json(['message' => 'Mot de passe mis à jour avec succès']);
     }
 
-    $user = User::find($id);
-
-    if (is_null($user)) {
-        return response()->json(
-            [
-                'message' => 'utilisateur introuvable',
-                "status" => "404"
+    public function verifCode(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => [
+                'required',
+                'email',
+                function ($attribute, $value, $fail) {
+                    if (!User::where('email', $value)->exists() ) {
+                        $fail('The selected email is invalid.');
+                    }
+                },
+            ],
+            'code' => [
+                "required",
+                "string",
+                "min:4",
+                "max:4",
+                "exists:verification_codes,code"
             ]
-        );
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                $validator->errors(),
+                "status" => 400
+            ]);
+        }
+        $code = $request->code;
+        $dataBaseCode = verification_code::where(["email" => $request->email, "status" => "pending", "code" => $code])->orderBy('created_at', 'desc')->first();
+
+        if ($dataBaseCode) {
+            $dataBaseCode->status = "used";
+            $dataBaseCode->save();
+            return response()->json([
+                'message' => "verification success",
+                "status" => 200,
+                "code" => $dataBaseCode
+            ]);
+        } else {
+            return response()->json([
+                "message" => "invalide verification code",
+                "status" =>  406 // not acceptable == 406
+            ]);
+        }
     }
 
-    if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imageName = time() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('storage/users'), $imageName);
-        $user->image = env('APP_URL') . '/storage/users/' . $imageName;
-    }
-
-    $user->name = $request->name;
-    $user->phone = $request->phone;
-    $user->email = $request->email;
-    $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
-    $user->sexe = $request->sexe;
-
-    $user->save();
-
-    return response()->json([
-        "message" => "Updated Successfully",
-        "status" => 200,
-    ]);
-}
 
     // public function update(Request $request, $id)
     // {

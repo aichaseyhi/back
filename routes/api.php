@@ -37,7 +37,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
     Route::get('user', 'user');
-    Route::put('update/{id}', 'update');
+    Route::post('forgetPassword', 'forgetPassWord');
+    Route::post('verifCode', 'verifCode');
+    Route::put('changePassword', 'changePassword');
 
 });
 
@@ -54,7 +56,6 @@ Route::prefix('users')->group(function () {
   Route::delete('/update/{id}',[UserController::class, 'update']);
   Route::get('/filter', [UserController::class, 'filterUser']);
   Route::put('/updateUserStatus/{id}', [UserController::class, 'updateUserStatus']);
-  Route::get('/messages', [MessageController::class, 'index']);
 });
 
 
@@ -65,7 +66,7 @@ Route::prefix('products')->group(function () {
   Route::put('/update/{id}', [ProductController::class, 'update']);
   Route::delete('/delete/{id}', [ProductController::class, 'destroy']);
   Route::get('filterProduct', [ProductController::class, 'filterProduct']);
-
+  Route::get('/show/{id}',[ProductController::class, 'show']);
 });
 
 //subCategory
@@ -74,6 +75,15 @@ Route::prefix('subCategories')->group(function () {
   Route::post('/save', [SubcategoryController::class, 'store']);
   Route::put('/update/{id}', [SubcategoryController::class, 'update']);
   Route::delete('/delete/{id}', [SubcategoryController::class, 'destroy']);
+  Route::get('/show/{id}',[SubcategoryController::class, 'show']);
+});
+
+//messages
+Route::prefix('message')->group(function () {
+  Route::get('/', [MessageController::class, 'index']);  
+  Route::put('/update/{id}', [MessageController::class, 'update']);
+  Route::delete('/delete/{id}', [MessageController::class, 'destroy']);
+  Route::get('/show/{id}',[MessageController::class, 'show']);
 });
 
 //instagrammer
@@ -87,6 +97,8 @@ Route::prefix('instagrammers')->group(function(){
   Route::post('/addProductProvider', [InstagrammerController::class, 'addProductProvider']);
   Route::get('/getInstagrammerProducts', [InstagrammerController::class, 'getInstagrammerProducts']);
   Route::post('/sendMessage', [InstagrammerController::class, 'sendMessage']);
+  Route::put('updateSelfData',[InstagrammerController::class, 'updateSelfData']);
+
 
 
 });
@@ -99,5 +111,7 @@ Route::prefix('providers')->group(function(){
   Route::put('/updateProduct/{id}', [ProductProviderController::class, 'update']);
   Route::put('/updateEchantillon/{id}', [ProviderController::class, 'updateEchantillon']);
   Route::get('/getProviderProducts', [ProviderController::class, 'getProviderProducts']);
+  Route::put('updateSelfData',[ProviderController::class, 'updateSelfData']);
+  Route::post('/sendMessage', [ProviderController::class, 'sendMessage']);
 
 });

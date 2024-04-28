@@ -9,9 +9,12 @@ use App\Models\Echantillon;
 use App\Models\Message;
 use App\Models\Product;
 use App\Models\Store;
+use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
 
 class InstagrammerController extends Controller
 {
@@ -19,6 +22,68 @@ class InstagrammerController extends Controller
     {
         $this->middleware('role:provider-intern');
 
+    }
+
+    public function updateSelfData(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => [
+                'required',
+                'string',
+                Rule::unique('users'),
+                'email'
+            ],
+            'phone' => ['required', 'regex:/^[0-9]{8}$/'],
+            'acountLink'=> 'nullable|string',
+            'street'=> 'nullable|string',
+            'city'=> 'nullable|string',
+            'post_code'=> ['nullable', 'regex:/^[0-9]{4}$/'],
+            'CIN'=> ['nullable', 'regex:/^[0-9]{8}$/'],
+            'TAXNumber'=> 'nullable|regex:/^[0-9]{8}$/',
+            'companyName'=> 'nullable|string',
+            'companyUnderConstruction'=> 'nullable|boolean',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+                "status" => 400
+            ]);
+        }
+    
+        $user = User::findOrFail(Auth::user()->id);
+    
+        if (is_null($user)) {
+            return response()->json(
+                [
+                    'message' => 'utilisateur introuvable',
+                    "status" => "404"
+                ]
+            );
+        }
+    
+        $user->name = $request->name;
+        $user->phone = $request->phone;
+        $user->email = $request->email;
+        $user->acountLink = $request->acountLink;
+         $user->street = $request->street;
+            $user->city = $request->city;
+            $user->post_code = $request->post_code;
+            $user->CIN = $request->CIN;
+            $user->companyName = $request->companyName;
+            $user->companyUnderConstruction = $request->companyUnderConstruction;
+            if ($request->companyUnderConstruction == false) {
+                $user->TAXNumber  = $request->TAXNumber;
+            } 
+     
+    
+        $user->save();
+    
+        return response()->json([
+            "message" => "Updated Successfully",
+            "status" => 200,
+        ]);
     }
     public function getInstagrammerProducts()
     {
@@ -64,11 +129,11 @@ class InstagrammerController extends Controller
                 'status' => Response::HTTP_NOT_FOUND
             ]);
         }
-        if($product->quantity >= $request->quantity && $product->status == "Available"){
-            $product->quantity -= $request->quantity; 
+        if( $product->status == "Available"){
+           // $product->quantity -= $request->quantity; 
             $product->save();
             $store = new Store();
-            $store->quantity = $request->quantity;
+           // $store->quantity = $request->quantity;
             $store->price =$request->price;
             $store->product_id = $product->id;
             $store->instagrammer_id =  Auth::user()->id;
@@ -110,4 +175,5 @@ class InstagrammerController extends Controller
             "data" => new MessageResource($messages)
         ]);
     }
+    
 }

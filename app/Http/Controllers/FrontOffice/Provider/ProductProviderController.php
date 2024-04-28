@@ -4,9 +4,13 @@ namespace App\Http\Controllers\FrontOffice\Provider;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Color;
 use App\Models\Echantillon;
 use App\Models\Image;
 use App\Models\Product;
+use App\Models\Size;
+use Illuminate\Support\Str; 
+use App\Models\SubCategory;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -33,9 +37,10 @@ class ProductProviderController extends Controller
             'priceFav' => 'required|numeric',
             'priceMax' => 'required|numeric',
            // 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category' => ['required', 'in:Clothing,Accessoiries,Home,Sport,Beauty,Electronics,Pets'],
-            'status' => ['required', 'in:Available,Unavailable'],
-            
+           'brand' => 'required|string',
+            'category' => ['required', 'in:CLOTHING,ACCESSOIRIES,HOME,SPORT,BEAUTY,ELECTRONICS,PETS'],
+            'status' => ['required', 'in:INSTOCK,OUTSTOCK'],
+            'echantillon' => ['required', 'in:FREE,PAID,REFUNDED'],
             
         ];
         $validator = Validator::make($request->all(), $rules);
@@ -56,9 +61,23 @@ class ProductProviderController extends Controller
         $product->category = $request->category;
         $product->status = $request->status;
         $product->provider_id =Auth::user()->id;
+        $product->brand = $request->brand;
+        $product->echantillon = $request->echantillon;
+        $product->reference = Str::random(8);
 
         $product->save();
-
+        foreach ($request->colors as $color_id) {
+            $color = Color::find($color_id);
+            $product->colors()->attach($color);
+        }
+        foreach ($request->sizes as $size_id) {
+            $size = Size::find($size_id);
+            $product->sizes()->attach($size);
+        }
+        foreach ($request->subcategories as $subcategory_id) {
+            $subcategory = SubCategory::find($subcategory_id);
+            $product->subcategories()->attach($subcategory);
+        }
            // Enregistrer les images
            foreach ($request->file('photo') as $image) {
             $imagePath = $image->store('photo');
