@@ -40,7 +40,8 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('forgetPassword', 'forgetPassWord');
     Route::post('verifCode', 'verifCode');
     Route::put('changePassword', 'changePassword');
-
+    Route::put('updateUserPassword/{id}', 'updateUserPassword');
+   
 });
 
 
@@ -93,6 +94,7 @@ Route::prefix('instagrammers')->group(function(){
   Route::post('/saveProduct', [ProductInstagrammerController::class, 'store']);
   Route::put('/updateProduct/{id}', [ProductInstagrammerController::class, 'update']);
   Route::delete('/deleteProduct/{id}', [ProductInstagrammerController::class, 'destroy']);
+  Route::get('/showProduct/{id}',[ProductInstagrammerController::class, 'show']);
   Route::post('/addEchantillon', [InstagrammerController::class, 'addEchantillon']);
   Route::post('/addProductProvider', [InstagrammerController::class, 'addProductProvider']);
   Route::get('/getInstagrammerProducts', [InstagrammerController::class, 'getInstagrammerProducts']);

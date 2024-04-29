@@ -133,7 +133,7 @@ class InstagrammerController extends Controller
            // $product->quantity -= $request->quantity; 
             $product->save();
             $store = new Store();
-           // $store->quantity = $request->quantity;
+            $store->quantity = $product->quantity;
             $store->price =$request->price;
             $store->product_id = $product->id;
             $store->instagrammer_id =  Auth::user()->id;
