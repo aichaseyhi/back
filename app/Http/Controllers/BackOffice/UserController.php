@@ -125,9 +125,10 @@ class UserController extends Controller
         // $rules = [];
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
-            'email' => ['required|email|unique:users,email|regex:/^[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}$/ '],
+            'email' => 'required|email|unique:users,email',
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
             'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'status' => ['nullable', 'in:ACTIVE,INACTIVE,PENDING'],
             'acountLink'=> 'nullable|string',
             'street'=> 'nullable|string',
             'city'=> 'nullable|string',
@@ -144,7 +145,7 @@ class UserController extends Controller
                 "status" => 400
             ]);
         }
-        $user = User::users()->find($id);
+        $user = User::find($id);
         if (is_null($user)) {
             return response()->json(
                 [
@@ -153,7 +154,7 @@ class UserController extends Controller
                 ]
             );
         }
-        $user->update($request->only('name', 'email', 'phone', 'status','image','acountLink','street','city','post_code', 'CIN','TAXNumber','companyName', 'companyUnderConstruction'));
+        $user->update($request->only('name', 'email', 'phone', 'status','image','acountLink','street','city','post_code','CIN','TAXNumber','companyName', 'companyUnderConstruction'));
         return response()->json([
             "message" => "Updated Successefully",
             "status" => 200,
