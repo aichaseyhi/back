@@ -22,7 +22,7 @@ class OrderController extends Controller
         $rules = [
             'firstName' => 'required|string',
             'secondName' => 'required|string',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email',
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
             'city' => 'required|string',
             'post_code' => ['required', 'regex:/^[0-9]{4}$/'],
@@ -41,8 +41,18 @@ class OrderController extends Controller
             ]);
         }
         $orders = new Order();
-        $orders->name  = $request->name;
-        $orders->type  = $request->type;
+        $orders->firstName  = $request->firstName;
+        $orders->secondName  = $request->secondName;
+        $orders->email  = $request->email;
+        $orders->phone  = $request->phone;
+        $orders->city  = $request->city;
+        $orders->post_code  = $request->post_code;
+        $orders->cardNumber  = $request->cardNumber;
+        $orders->securityCode  = $request->securityCode;
+        $orders->CVV  = $request->CVV;
+        $orders->quantity  = $request->quantity;
+        $orders->totalPrice  = $request->totalPrice;
+        $orders->status  = $request->status;
        
         $orders->save();
         return response()->json('Order created!');

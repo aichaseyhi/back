@@ -127,6 +127,7 @@ class UserController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
+            'poste' => ['nullable', 'in:administrator,operator'],
             'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => ['nullable', 'in:ACTIVE,INACTIVE,PENDING'],
             'acountLink'=> 'nullable|string',
@@ -154,7 +155,7 @@ class UserController extends Controller
                 ]
             );
         }
-        $user->update($request->only('name', 'email', 'phone', 'status','image','acountLink','street','city','post_code','CIN','TAXNumber','companyName', 'companyUnderConstruction'));
+        $user->update($request->only('name', 'email', 'phone', 'status','image','poste','acountLink','street','city','post_code','CIN','TAXNumber','companyName', 'companyUnderConstruction',));
         return response()->json([
             "message" => "Updated Successefully",
             "status" => 200,
