@@ -54,7 +54,6 @@ class ProductController extends Controller
                 "status" => 400
             ]);
         }
-        
         $product = new Product();
         $product->name = $request->name;
         $product->description = $request->description;
@@ -67,6 +66,8 @@ class ProductController extends Controller
         $product->status = $request->status;
         $product->echantillon = $request->echantillon;
         $product->reference = Str::random(8);
+        $subcategories = SubCategory::where('type',$request->category)->get();
+        $product->subcategories()->attach($subcategories);
 
         $product->save();
         foreach ($request->colors as $color_id) {
@@ -77,10 +78,7 @@ class ProductController extends Controller
             $size = Size::find($size_id);
             $product->sizes()->attach($size);
         }
-        foreach ($request->subcategories as $subcategory_id) {
-            $subcategory = SubCategory::find($subcategory_id);
-            $product->subcategories()->attach($subcategory);
-        }
+       
            // Enregistrer les images
            foreach ($request->file('photo') as $image) {
             $imagePath = $image->store('photo');

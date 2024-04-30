@@ -127,8 +127,16 @@ class UserController extends Controller
             'name' => 'required|string',
             'email' => ['required|email|unique:users,email|regex:/^[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}$/ '],
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
-            'birthday' => ['required|date'],
-            'sexe' => ['required', 'in:male,female'],
+            'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'acountLink'=> 'nullable|string',
+            'street'=> 'nullable|string',
+            'city'=> 'nullable|string',
+            'post_code'=> ['nullable', 'regex:/^[0-9]{4}$/'],
+            'CIN'=> ['nullable', 'regex:/^[0-9]{8}$/'],
+            'TAXNumber'=> 'nullable|regex:/^[0-9]{8}$/',
+            'companyName'=> 'nullable|string',
+            'companyUnderConstruction'=> 'nullable|boolean',
+            
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -145,7 +153,7 @@ class UserController extends Controller
                 ]
             );
         }
-        $user->update($request->only('name', 'email', 'phone', 'birthday', 'sexe', 'status'));
+        $user->update($request->only('name', 'email', 'phone', 'status','image','acountLink','street','city','post_code', 'CIN','TAXNumber','companyName', 'companyUnderConstruction'));
         return response()->json([
             "message" => "Updated Successefully",
             "status" => 200,
