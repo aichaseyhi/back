@@ -54,7 +54,7 @@ Route::prefix('users')->group(function () {
   Route::post('/save',[UserController::class, 'store']);
   Route::get('/show/{id}',[UserController::class, 'show']);
   Route::delete('/destroy/{id}',[UserController::class, 'destroy']);
-  Route::delete('/update/{id}',[UserController::class, 'update']);
+  Route::put('/update/{id}',[UserController::class, 'update']);
   Route::get('/filter', [UserController::class, 'filterUser']);
   Route::put('/updateUserStatus/{id}', [UserController::class, 'updateUserStatus']);
 });

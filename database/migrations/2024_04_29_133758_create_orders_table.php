@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('CVV');
             $table->integer('quantity');
             $table->float('totalPrice');
-            $table->enum('', ['PENDING', 'ACCEPTED','REFUSED','CANCEL'])->default('PENDING');
+            $table->enum('status', ['PENDING', 'ACCEPTED','REFUSED','CANCEL'])->default('PENDING');
             $table->timestamps();
         });
     }

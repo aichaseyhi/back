@@ -20,9 +20,18 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required|string',
-            'type' => 'required|string',
-           
+            'firstName' => 'required|string',
+            'secondName' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'phone' => ['required', 'regex:/^[0-9]{8}$/'],
+            'city' => 'required|string',
+            'post_code' => ['required', 'regex:/^[0-9]{4}$/'],
+            'cardNumber' => 'required|numeric',
+            'securityCode' => ['nullable', 'regex:/^[0-9]{4}$/'],
+            'CVV' => 'required|numeric',
+            'quantity' => 'required|numeric',
+            'totalPrice' => 'required|numeric',
+            'status' => ['nullable', 'in:ACCEPTED,REFUSED,PENDING,CANCEL'],
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
