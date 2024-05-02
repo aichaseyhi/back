@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetRequestController;
 use App\Http\Controllers\BackOffice\MessageController;
+use App\Http\Controllers\BackOffice\OrderController;
 use App\Http\Controllers\BackOffice\UserController;
 use App\Http\Controllers\BackOffice\ProductController;
 use App\Http\Controllers\BackOffice\SubcategoryController;
@@ -85,6 +86,17 @@ Route::prefix('message')->group(function () {
   Route::put('/update/{id}', [MessageController::class, 'update']);
   Route::delete('/delete/{id}', [MessageController::class, 'destroy']);
   Route::get('/show/{id}',[MessageController::class, 'show']);
+});
+
+//orders
+Route::prefix('orders')->group(function () {
+  Route::get('/', [OrderController::class, 'index']);
+  Route::post('/save', [OrderController::class, 'store']);
+  Route::put('/update/{id}', [OrderController::class, 'update']);
+  Route::delete('/delete/{id}', [OrderController::class, 'destroy']);
+  Route::get('/show/{id}',[OrderController::class, 'show']);
+  Route::put('/updateOrderStatus/{id}', [OrderController::class, 'updateOrderStatus']);
+  Route::get('/filterOrders', [OrderController::class, 'filterOrders']);
 });
 
 //instagrammer

@@ -66,10 +66,11 @@ class ProductController extends Controller
         $product->status = $request->status;
         $product->echantillon = $request->echantillon;
         $product->reference = Str::random(8);
-        $subcategories = SubCategory::where('type',$request->category)->get();
-        $product->subcategories()->attach($subcategories);
-
         $product->save();
+
+        $subcategorie = SubCategory::where('type',$request->category)->first();
+        $product->subcategories()->attach($subcategorie);
+
         foreach ($request->colors as $color_id) {
             $color = Color::find($color_id);
             $product->colors()->attach($color);

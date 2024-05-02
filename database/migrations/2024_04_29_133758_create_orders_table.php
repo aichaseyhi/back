@@ -14,17 +14,21 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('firstName');
-            $table->string('secondName');
+            $table->string('lastName');
             $table->string('email');
             $table->string('phone');
             $table->string('city');
             $table->integer('post_code');
-            $table->integer('cardNumber');
-            $table->integer('securityCode');
-            $table->string('CVV');
+            $table->integer('cardNumber')->nullable();
+            $table->integer('securityCode')->nullable();
+            $table->string('CVV')->nullable();
             $table->integer('quantity');
-            $table->float('totalPrice');
-            $table->enum('status', ['PENDING', 'ACCEPTED','REFUSED','CANCEL'])->default('PENDING');
+            $table->float('TVA');
+            $table->float('shippingCost');
+            $table->float('totalPrice')->default(0);
+            $table->enum('payment', ['Credit','CashOnDelivery']);
+            $table->enum('status', ['PENDING', 'SUCCESS','REFUSED','CANCEL','INPROGRESS'])->default('PENDING');
+            $table->foreignId('product_id')->nullable()->constrained('products')->cascadeOnDelete();
             $table->timestamps();
         });
     }

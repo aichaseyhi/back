@@ -22,8 +22,17 @@ class Order extends Model
         'securityCode',
         'CVV',
         'quantity',
+        'TVA',
+        'shippingCost',
+        'payment',
         'totalPrice',
-        'status'
-    ];   
+        'status',
+        'product_id'
+    ];  
+    
+    public function produit()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }
 
