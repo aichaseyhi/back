@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\BackOffice;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
@@ -16,7 +18,11 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::all();
-        return response()->json($orders); 
+        return response()->json([
+            'message' => 'List Orders !',
+            "status" => Response::HTTP_CREATED,
+            "data" =>  OrderResource::collection($orders)
+        ]);
     }   
     public function store(Request $request)
     {
@@ -41,7 +47,6 @@ class OrderController extends Controller
                     }
                 },
             ],
-            //'totalPrice' => 'required|numeric',
             'payment' => ['required', 'in:Credit,CashOnDelivery'],
             //'status' => ['required', 'in:SUCCESS,REFUSED,PENDING,CANCEL,INPROGRESS'],
             "product_id" => "required|exists:products,id",
@@ -61,7 +66,7 @@ class OrderController extends Controller
         $totalPrice += $TVA;
 
         // Ajouter le shippingCost de 6 au totalPrice
-    $totalPrice += 6;
+        $totalPrice += 6;
        
         $orders = new Order();
         $orders->firstName  = $request->firstName;
@@ -75,7 +80,7 @@ class OrderController extends Controller
         $orders->CVV  = $request->CVV;
         $orders->quantity  = $request->quantity;
         $orders->shippingCost  = 6;
-        $orders->TVA  = $TVA;
+        $orders->TVA = $TVA;
         $orders->payment  = $request->payment;
         $orders->totalPrice  = $totalPrice;
         //$orders->status  = $request->status;
@@ -85,15 +90,50 @@ class OrderController extends Controller
          // Mise à jour de la quantité du produit
          $product->quantity -= $request->quantity;
          $product->save();
-        return response()->json('Order created!');
+         return response()->json([
+            'message' => 'Order created!',
+            "status" => Response::HTTP_CREATED,
+            "data" => new OrderResource($orders)
+        ]);
     }
     public function show($id)
     {
         $orders = Order::find($id);
         return response()->json($orders);
     }
-    public function updateOrder(Request $request, $id)
+    public function update(Request $request, $id)
     {
+        $rules = [
+            'firstName' => 'string',
+            'lastName' => 'string',
+            'email' => 'email',
+            'phone' => ['regex:/^[0-9]{8}$/'],
+            'city' => 'string',
+            'post_code' => ['regex:/^[0-9]{4}$/'],
+            'cardNumber' => 'nullable|numeric',
+            'securityCode' => ['nullable', 'regex:/^[0-9]{4}$/'],
+            'CVV' => 'nullable|numeric',
+            'quantity' => [
+                'integer',
+                function ($attribute, $value, $fail) use ($request) {
+                    $remainingQuantity = Product::where('id', $request->input('product_id'))
+                        ->value('quantity');
+                    if ($value > $remainingQuantity) {
+                        $fail($attribute . ' must be less than ' . $remainingQuantity);
+                    }
+                },
+            ],
+            'payment' => ['in:Credit,CashOnDelivery'],
+            "product_id" => "exists:products,id",
+            //'status' => ['in:SUCCESS,REFUSED,PENDING,CANCEL,INPROGRESS'],
+        ];
+           $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                $validator->errors(),
+                "status" => 400
+            ]);
+        }
         // Trouver la commande à mettre à jour
         $order = Order::findOrFail($id);
 
@@ -101,17 +141,44 @@ class OrderController extends Controller
         if (!$order) {
             return response()->json(['message' => 'order non trouvée'], 404);
         }
+        $product = Product::findOrFail($request->product_id);
+        $totalPrice = $request->quantity * $product->priceSale;
 
+        // Calculer la TVA comme 7% du prix du produit
+        $TVA = $product->priceSale * 0.07;
+        $totalPrice += $TVA;
+
+        // Ajouter le shippingCost de 6 au totalPrice
+        $totalPrice += 6;
+       
+        $order->firstName  = $request->firstName;
+        $order->lastName  = $request->lastName;
+        $order->email  = $request->email;
+        $order->phone  = $request->phone;
+        $order->city  = $request->city;
+        $order->post_code  = $request->post_code;
+        $order->cardNumber  = $request->cardNumber;
+        $order->securityCode  = $request->securityCode;
+        $order->CVV  = $request->CVV;
+        $order->quantity  = $request->quantity;
+        $order->shippingCost  = 6;
+        $order->TVA = $TVA;
+        $order->payment  = $request->payment;
+        $order->product_id  = $request->product_id;
+        $order->totalPrice  = $totalPrice;
+
+        $order->save();
+
+         // Mise à jour de la quantité du produit
+         $product->quantity -= $request->quantity;
+         $product->save();
         // Mettre à jour les champs de la commande
-        $order->user_id = $request->input('user_id', $order->user_id);
-        $order->price = $request->input('price', $order->price);
-        $order->status = $request->input('status', $order->status);
         $order->save();
 
         // Retourner la commande mise à jour
         return response()->json($order);
     }
-    public function update(Request $request, $id)
+    public function updateOrder(Request $request, $id)
     {
        $orders = Order::find($id);
        $orders->update($request->all());

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,7 +30,8 @@ class ProductResource extends JsonResource
             'sizes' =>$this->sizes,
             'images' =>$this->images,
             'subcategories' =>$this->subcategories,
-
+            'instagrammer_id' => new UserResource(User::find($this->instagrammer_id)),
+            'provider_id'=> new UserResource(User::find($this->provider_id)),
         ];
         
     }
