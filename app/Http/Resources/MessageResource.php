@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,7 +18,7 @@ class MessageResource extends JsonResource
         return [
             'id' => $this->id,
             'message' => $this->message,
-            'sender_id' => new UserResource($this->whenLoaded('sender_id')),
+            'sender_id' => new UserResource(User::find($this->sender_id)),
         ];
     }
 }

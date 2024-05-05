@@ -4,6 +4,7 @@ namespace App\Http\Controllers\FrontOffice\Provider;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 use App\Models\Color;
 use App\Models\Echantillon;
 use App\Models\Image;
@@ -22,11 +23,7 @@ class ProductProviderController extends Controller
         $this->middleware('role:provider-extern');
 
     }
-    public function index()
-    {
-        $produits = Product::all();
-        return response()->json($produits); 
-    }   
+       
     public function store(Request $request)
     {
         $rules = [
@@ -66,6 +63,10 @@ class ProductProviderController extends Controller
         $product->reference = Str::random(8);
 
         $product->save();
+
+        $subcategorie = SubCategory::where('type',$request->category)->first();
+        $product->subcategories()->attach($subcategorie);
+
         foreach ($request->colors as $color_id) {
             $color = Color::find($color_id);
             $product->colors()->attach($color);
@@ -74,10 +75,7 @@ class ProductProviderController extends Controller
             $size = Size::find($size_id);
             $product->sizes()->attach($size);
         }
-        foreach ($request->subcategories as $subcategory_id) {
-            $subcategory = SubCategory::find($subcategory_id);
-            $product->subcategories()->attach($subcategory);
-        }
+       
            // Enregistrer les images
            foreach ($request->file('photo') as $image) {
             $imagePath = $image->store('photo');
@@ -91,10 +89,10 @@ class ProductProviderController extends Controller
             $productImage->save();
         }
 
-
         return response()->json([
-            'message' => 'product created!',
-            "status" => Response::HTTP_CREATED
+            'message' => 'Product created!',
+            "status" => Response::HTTP_CREATED,
+            "data" => new ProductResource($product)
         ]);
     }
    

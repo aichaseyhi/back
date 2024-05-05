@@ -4,6 +4,7 @@ namespace App\Http\Controllers\FrontOffice\Instagrammer;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 use App\Models\Color;
 use App\Models\Echantillon;
 use App\Models\Image;
@@ -26,11 +27,11 @@ class ProductInstagrammerController extends Controller
 
     }
 
-    public function index()
-    {
-        $products = Product::all();
-        return response()->json($products); 
-    }  
+    // public function index()
+    // {
+    //     $products = Product::all();
+    //     return response()->json($products); 
+    // }  
    
     public function store(Request $request)
     {
@@ -67,6 +68,8 @@ class ProductInstagrammerController extends Controller
 
         $product->save();
 
+        $subcategorie = SubCategory::where('type',$request->category)->first();
+        $product->subcategories()->attach($subcategorie);
 
         foreach ($request->colors as $color_id) {
             $color = Color::find($color_id);
@@ -76,10 +79,7 @@ class ProductInstagrammerController extends Controller
             $size = Size::find($size_id);
             $product->sizes()->attach($size);
         }
-        foreach ($request->subcategories as $subcategory_id) {
-            $subcategory = SubCategory::find($subcategory_id);
-            $product->subcategories()->attach($subcategory);
-        }
+       
            // Enregistrer les images
            foreach ($request->file('photo') as $image) {
             $imagePath = $image->store('photo');
@@ -100,11 +100,11 @@ class ProductInstagrammerController extends Controller
             $store->instagrammer_id = $product->instagrammer_id;
             $store->save();
         
-
-        return response()->json([
-            'message' => 'Product created!',
-            "status" => Response::HTTP_CREATED
-        ]);
+            return response()->json([
+                'message' => 'Product created!',
+                "status" => Response::HTTP_CREATED,
+                "data" => new ProductResource($product)
+            ]);
     }
 
     public function show($id)

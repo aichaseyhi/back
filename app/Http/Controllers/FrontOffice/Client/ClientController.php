@@ -1,30 +1,29 @@
 <?php
 
-namespace App\Http\Controllers\BackOffice;
+namespace App\Http\Controllers\FrontOffice\Client;
+
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Order;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
-class OrderController extends Controller
+class ClientController extends Controller
 {
-    public function __construct()
+    public function getProductById($id)
     {
-        $this->middleware(['role:admin|superadmin']);
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+    
+        return new ProductResource($product);
     }
-    public function index()
-    {
-        $orders = Order::all();
-        return response()->json([
-            'message' => 'List Orders !',
-            "status" => Response::HTTP_OK,
-            "data" =>  OrderResource::collection($orders)
-        ]);
-    }   
-    public function store(Request $request)
+
+    public function addOrder(Request $request)
     {
         $rules = [
             'firstName' => 'required|string',
@@ -101,7 +100,7 @@ class OrderController extends Controller
         $orders = Order::find($id);
         return response()->json($orders);
     }
-    public function update(Request $request, $id)
+    public function updateOrder(Request $request, $id)
     {
         $rules = [
             'firstName' => 'string',
@@ -152,7 +151,6 @@ class OrderController extends Controller
         $totalPrice += 6;
         $quantityDifference = $request->quantity - $order->quantity;
 
-       
         $order->firstName  = $request->firstName;
         $order->lastName  = $request->lastName;
         $order->email  = $request->email;
@@ -180,55 +178,33 @@ class OrderController extends Controller
         // Retourner la commande mise à jour
         return response()->json($order);
     }
-    public function updateOrder(Request $request, $id)
-    {
-       $orders = Order::find($id);
-       $orders->update($request->all());
-       return response()->json('Order updated');
+    public function cancelOrder(Request $request, $id)
+{
+    $order = Order::find($id);
+
+    if (!$order) {
+        return response()->json(['message' => 'Order not found'], 404);
     }
-    public function destroy($id)
-    {
-        $orders = Order::find($id);
-        $orders->delete();
-        return response()->json('Order deleted!');
+
+    $order->status = 'CANCEL';
+    $order->save();
+
+    return response()->json(['message' => 'Order cancled'], 200);
+}
+
+public function confirmOrder(Request $request, $id)
+{
+    $order = Order::find($id);
+
+    if (!$order) {
+        return response()->json(['message' => 'Order not found'], 404);
     }
-    
-    //Update Status
-    public function updateOrderStatus(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|in:SUCCESS,REFUSED,PENDING,CANCEL,INPROGRESS',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    $order->status = 'SUCCESS';
+    $order->save();
 
-        $order = Order::find($id);
+    return response()->json(['message' => 'Order delivered'], 200);
+}
 
-        if (!$order) {
-            return response()->json(['message' => 'Order not found'], 404);
-        }
-
-        $order->status = $request->input('status');
-        $order->save();
-
-        return response()->json(['message' => 'Order status updated successfully'], 200);
-    }
-       //Filtrer commands selon leurs status
-       public function filterOrders(Request $request)
-       {
-           // Récupération du paramètre de catégorie
-           $status = $request->input('status');
-   
-   
-           if (!$status) {
-               return response()->json(['error' => 'Le paramètre de status est obligatoire.'], 400);
-           }
-   
-           $orders = Order::where('status', $status)->get();
-   
-           return response()->json($orders);
-       }
     
 }

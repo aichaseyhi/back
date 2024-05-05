@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetRequestController;
+use App\Http\Controllers\FrontOffice\Client\ClientController;
 use App\Http\Controllers\BackOffice\MessageController;
 use App\Http\Controllers\BackOffice\OrderController;
 use App\Http\Controllers\BackOffice\UserController;
@@ -69,6 +70,9 @@ Route::prefix('products')->group(function () {
   Route::delete('/delete/{id}', [ProductController::class, 'destroy']);
   Route::get('filterProduct', [ProductController::class, 'filterProduct']);
   Route::get('/show/{id}',[ProductController::class, 'show']);
+  Route::put('/updateProductStatus/{id}', [ProductController::class, 'updateProductStatus']);
+  Route::get('/filterProducts',[ProductController::class, 'filterProducts']);
+
 });
 
 //subCategory
@@ -112,6 +116,7 @@ Route::prefix('instagrammers')->group(function(){
   Route::get('/getInstagrammerProducts', [InstagrammerController::class, 'getInstagrammerProducts']);
   Route::post('/sendMessage', [InstagrammerController::class, 'sendMessage']);
   Route::put('updateSelfData',[InstagrammerController::class, 'updateSelfData']);
+  Route::get('/getProviderProducts', [InstagrammerController::class, 'getProviderProducts']);
 
 
 
@@ -127,5 +132,15 @@ Route::prefix('providers')->group(function(){
   Route::get('/getProviderProducts', [ProviderController::class, 'getProviderProducts']);
   Route::put('updateSelfData',[ProviderController::class, 'updateSelfData']);
   Route::post('/sendMessage', [ProviderController::class, 'sendMessage']);
+
+});
+
+//client
+Route::prefix('clients')->group(function(){
+  Route::get('/getProductById/{id}', [ClientController::class, 'getProductById']);
+  Route::post('/addOrder', [ClientController::class, 'addOrder']);
+  Route::put('/updateOrder/{id}', [ClientController::class, 'updateOrder']);
+  Route::put('/cancelOrder/{id}', [ClientController::class, 'cancelOrder']);
+  Route::put('/confirmOrder/{id}', [ClientController::class, 'confirmOrder']);
 
 });

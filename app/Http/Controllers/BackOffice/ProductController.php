@@ -26,7 +26,7 @@ class ProductController extends Controller
         $products = Product::all();
         return response()->json([
             'message' => 'List Products !',
-            "status" => Response::HTTP_CREATED,
+            "status" => Response::HTTP_OK,
             "data" =>  ProductResource::collection($products)
         ]);
 
@@ -102,8 +102,8 @@ class ProductController extends Controller
     }
     public function show($id)
     {
-        $contact = Product::find($id);
-        return response()->json($contact);
+        $product = Product::find($id);
+        return response()->json($product);
     }
     public function update(Request $request, $id)
     {
@@ -150,5 +150,26 @@ class ProductController extends Controller
     $products = Product::where('category', $category)->get();
 
     return response()->json($products);
+}
+public function updateProductStatus(Request $request, $id)
+{
+    $validator = Validator::make($request->all(), [
+        'status' => 'required|in:INSTOCK,OUTSTOCK',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    $products = Product::find($id);
+
+    if (!$products) {
+        return response()->json(['message' => 'Product not found'], 404);
+    }
+
+    $products->status = $request->input('status');
+    $products->save();
+
+    return response()->json(['message' => 'Product status updated successfully'], 200);
 }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\FrontOffice\Provider;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Echantillon;
 use App\Models\Message;
 use App\Models\Product;
@@ -27,10 +28,11 @@ class ProviderController extends Controller
     {
         $products = Product::where("provider_id", "=", auth()->user()->id)->get();
         return response()->json([
-            "message" => "all Provider products ",
-            "Products" => $products,
-            "satus" => 200,
+            'message' => 'List Products !',
+            "status" => Response::HTTP_OK,
+            "data" =>  ProductResource::collection($products)
         ]);
+        
     } 
 
     public function updateSelfData(Request $request)

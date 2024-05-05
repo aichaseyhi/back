@@ -5,6 +5,7 @@ namespace App\Http\Controllers\FrontOffice\Instagrammer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Echantillon;
 use App\Models\Message;
 use App\Models\Product;
@@ -89,11 +90,39 @@ class InstagrammerController extends Controller
     {
         $products = Product::where("instagrammer_id", "=", auth()->user()->id)->get();
         return response()->json([
-            "message" => "all Instagrammer products ",
-            "Products" => $products,
-            "satus" => 200,
+            'message' => 'all Instagrammer products',
+            "status" => Response::HTTP_OK,
+            "data" =>  ProductResource::collection($products)
         ]);
+       
     } 
+
+    public function getProviderProducts()
+{
+    $products = Product::whereNotNull('provider_id')->get();
+    return response()->json([
+        'message' => 'All provider products',
+        "status" => Response::HTTP_OK,
+        "data" =>  ProductResource::collection($products)
+    ]);
+}
+
+public function filterProducts(Request $request)
+{
+    // Récupération du paramètre de catégorie
+    $category = $request->input('category');
+
+
+    if (!$category) {
+        return response()->json(['error' => 'Le paramètre de catégorie est obligatoire.'], 400);
+    }
+
+    // Recherche des partenaires en fonction de la catégorie
+    $products = Product::where('category', $category)->get();
+
+    return response()->json($products);
+}
+
 
     public function addEchantillon(Request $request)
     {
@@ -129,7 +158,7 @@ class InstagrammerController extends Controller
                 'status' => Response::HTTP_NOT_FOUND
             ]);
         }
-        if( $product->status == "Available"){
+        if( $product->status == "INSTOCK"){
            // $product->quantity -= $request->quantity; 
             $product->save();
             $store = new Store();
@@ -144,7 +173,7 @@ class InstagrammerController extends Controller
             ]); 
         } else {
             return response()->json([
-                'message' => 'Product quantity is insufficient or status is not "disponible"',
+                'message' => 'Product quantity is insufficient',
                 'status' => Response::HTTP_BAD_REQUEST
             ]);
         }
@@ -153,9 +182,7 @@ class InstagrammerController extends Controller
     public function sendMessage(Request $request)
     {
         $rules = [
-            'message' => 'required|string',
-            
-           
+            'message' => 'required|string',          
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {

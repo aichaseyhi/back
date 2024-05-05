@@ -16,7 +16,7 @@ class MessageController extends Controller
         $messages = Message::all();
         return response()->json([
             'message' => 'List messages !',
-            "status" => Response::HTTP_CREATED,
+            "status" => Response::HTTP_OK,
             "data" =>  MessageResource::collection($messages)
         ]);
        ; 

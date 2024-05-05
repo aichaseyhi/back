@@ -20,8 +20,15 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'password' => $this->password,
             'status' => $this->status,
-            'birthday' => $this->birthday,
-            'sexe' => $this->sexe,
+            'image' => $this->image,
+            'street' => $this->street,
+            'city' => $this->city,
+            'postal_code' => $this->postal_code,
+            'CIN' => $this->CIN,
+            'TAXNumber' => $this->TAXNumber,
+            'companyName' => $this->companyName,
+            'companyUnderConstruction' => $this->companyUnderConstruction,
+
 
         ];
     }
