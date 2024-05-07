@@ -64,7 +64,7 @@ class AuthController extends Controller
         $user->password = Hash::make($request->password);
        // $user->birthday = Carbon::createFromFormat('d/m/Y', $request->birthday)->format('Y-m-d');
        // $user->sexe = $request->sexe;
-        $user->image = $imageName ? env('APP_URL') . '/storage/users/' . $imageName : null;
+        $user->image  = 'http://localhost:8000/storage/users/' . $imageName;
         $user->acountLink = $request->acountLink;
         $user->street = $request->street;
         $user->city = $request->city;
