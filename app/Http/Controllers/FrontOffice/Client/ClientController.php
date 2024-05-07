@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\ProductResource;
+use App\Mail\OrderConfirmation;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
@@ -89,6 +91,10 @@ class ClientController extends Controller
          // Mise à jour de la quantité du produit
          $product->quantity -= $request->quantity;
          $product->save();
+
+
+         Mail::to($request->email)->send(new OrderConfirmation($orders));
+         
          return response()->json([
             'message' => 'Order created!',
             "status" => Response::HTTP_CREATED,
@@ -205,6 +211,19 @@ public function confirmOrder(Request $request, $id)
 
     return response()->json(['message' => 'Order delivered'], 200);
 }
-
+public function sendEmail(Request $request){
+    // If email does not exist
+    if(!$this->validEmail($request->email)) {
+        return response()->json([
+            'message' => 'Email does not exist.'
+        ], Response::HTTP_NOT_FOUND);
+    } else {
+        // If email exists
+        $this->sendMail($request->email);
+        return response()->json([
+            'message' => 'Check your inbox, we have sent a link to reset email.'
+        ], Response::HTTP_OK);            
+    }
+}
     
 }

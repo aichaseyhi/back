@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\FrontOffice\Instagrammer;
 
+use App\Jobs\MessageJob;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageResource;
@@ -196,6 +197,7 @@ public function filterProducts(Request $request)
         $messages->sender_id  = Auth::user()->id;
        
         $messages->save();
+        dispatch(new MessageJob($messages));
         return response()->json([
             'message' => 'Message created!',
             "status" => Response::HTTP_CREATED,

@@ -89,7 +89,7 @@ class ProductController extends Controller
             // Créer une nouvelle image associée au produit
             $productImage = new Image();
             $productImage->product_id = $product->id;
-            $productImage->path = env('APP_URL') . '/storage/products/' . $imageName;
+            $productImage->path = 'http://localhost:8000/storage/products/' . $imageName;
             $productImage->save();
         }
 
