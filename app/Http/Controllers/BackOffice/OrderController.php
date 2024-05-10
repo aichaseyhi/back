@@ -8,6 +8,8 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str; 
+
 
 class OrderController extends Controller
 {
@@ -32,6 +34,8 @@ class OrderController extends Controller
             'email' => 'required|email',
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
             'city' => 'required|string',
+            'color' => 'nullable|string',
+            'size' => 'nullable|string',
             'post_code' => ['required', 'regex:/^[0-9]{4}$/'],
             'cardNumber' => 'nullable|numeric',
             'securityCode' => ['nullable', 'regex:/^[0-9]{4}$/'],
@@ -59,11 +63,11 @@ class OrderController extends Controller
             ]);
         }
         $product = Product::findOrFail($request->product_id);
-        $totalPrice = $request->quantity * $product->priceSale;
+        $totalProduct = $request->quantity * $product->priceSale;
 
         // Calculer la TVA comme 7% du prix du produit
         $TVA = $product->priceSale * 0.07;
-        $totalPrice += $TVA;
+        $totalPrice = $totalProduct+$TVA;
 
         // Ajouter le shippingCost de 6 au totalPrice
         $totalPrice += 6;
@@ -73,7 +77,10 @@ class OrderController extends Controller
         $orders->lastName  = $request->lastName;
         $orders->email  = $request->email;
         $orders->phone  = $request->phone;
+        $orders->reference = str::random(8);
         $orders->city  = $request->city;
+        $orders->color  = $request->color;
+        $orders->size  = $request->size;
         $orders->post_code  = $request->post_code;
         $orders->cardNumber  = $request->cardNumber;
         $orders->securityCode  = $request->securityCode;
@@ -82,6 +89,7 @@ class OrderController extends Controller
         $orders->shippingCost  = 6;
         $orders->TVA = $TVA;
         $orders->payment  = $request->payment;
+        $orders->totalProduct  = $totalProduct;
         $orders->totalPrice  = $totalPrice;
         //$orders->status  = $request->status;
         $orders->product_id  = $request->product_id;

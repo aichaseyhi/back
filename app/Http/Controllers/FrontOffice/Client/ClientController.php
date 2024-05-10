@@ -12,6 +12,8 @@ use App\Models\Product;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str; 
+
 
 class ClientController extends Controller
 {
@@ -32,6 +34,8 @@ class ClientController extends Controller
             'lastName' => 'required|string',
             'email' => 'required|email',
             'phone' => ['required', 'regex:/^[0-9]{8}$/'],
+            'color' => 'nullable|string',
+            'size' => 'nullable|string',
             'city' => 'required|string',
             'post_code' => ['required', 'regex:/^[0-9]{4}$/'],
             'cardNumber' => 'nullable|numeric',
@@ -60,19 +64,22 @@ class ClientController extends Controller
             ]);
         }
         $product = Product::findOrFail($request->product_id);
-        $totalPrice = $request->quantity * $product->priceSale;
+        $totalProduct = $request->quantity * $product->priceSale;
 
         // Calculer la TVA comme 7% du prix du produit
         $TVA = $product->priceSale * 0.07;
-        $totalPrice += $TVA;
+        $totalPrice = $totalProduct+$TVA;
 
         // Ajouter le shippingCost de 6 au totalPrice
-        $totalPrice += 6;
+         $totalPrice += 6;
        
         $orders = new Order();
         $orders->firstName  = $request->firstName;
         $orders->lastName  = $request->lastName;
         $orders->email  = $request->email;
+        $orders->reference = str::random(8);
+        $orders->city  = $request->city;
+        $orders->color  = $request->color;
         $orders->phone  = $request->phone;
         $orders->city  = $request->city;
         $orders->post_code  = $request->post_code;
@@ -83,6 +90,7 @@ class ClientController extends Controller
         $orders->shippingCost  = 6;
         $orders->TVA = $TVA;
         $orders->payment  = $request->payment;
+        $orders->totalProduct  = $totalProduct;
         $orders->totalPrice  = $totalPrice;
         //$orders->status  = $request->status;
         $orders->product_id  = $request->product_id;

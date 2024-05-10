@@ -19,12 +19,16 @@ return new class extends Migration
             $table->string('phone');
             $table->string('city');
             $table->integer('post_code');
+            $table->string('reference')->unique();
             $table->integer('cardNumber')->nullable();
             $table->integer('securityCode')->nullable();
             $table->string('CVV')->nullable();
+            $table->string('color')->nullable();
+            $table->string('size')->nullable();
             $table->integer('quantity');
             $table->float('TVA');
             $table->float('shippingCost');
+            $table->float('totalProduct')->default(0);
             $table->float('totalPrice')->default(0);
             $table->enum('payment', ['Credit','CashOnDelivery']);
             $table->enum('status', ['PENDING', 'SUCCESS','REFUSED','CANCEL','INPROGRESS'])->default('PENDING');

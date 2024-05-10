@@ -3,7 +3,7 @@
 
 Pour suivre votre commande, veuillez cliquer ici !
 
-@component('mail::button', ['url' => 'http://localhost:4200/order_traking'])
+@component('mail::button', ['url' => 'http://localhost:4200/order_tracking'])
 Suivi Commande
 @endcomponent
 
